@@ -1,0 +1,16 @@
+{
+    "nouns": [
+        {"word": "apple", "translation": "quả táo", "question": "What is a round fruit that is typically red or green?"},
+        {"word": "book", "translation": "quyển sách", "question": "What do you read with pages and a cover?"},
+        {"word": "house", "translation": "ngôi nhà", "question": "What is a building where people live?"},
+        {"word": "tree", "translation": "cái cây", "question": "What has branches, leaves and grows from the ground?"},
+        {"word": "cat", "translation": "con mèo", "question": "What is a small furry pet that meows?"}
+    ],
+    "verbs": [
+        {"word": "run", "translation": "chạy", "question": "What do you do when you move quickly with your legs?"},
+        {"word": "write", "translation": "viết", "question": "What do you do when you use a pen on paper?"},
+        {"word": "speak", "translation": "nói", "question": "What do you do with your mouth to communicate?"},
+        {"word": "eat", "translation": "ăn", "question": "What do you do with food at mealtimes?"},
+        {"word": "sleep", "translation": "ngủ", "question": "What do you do in bed at night with your eyes closed?"}
+    ]
+} 
