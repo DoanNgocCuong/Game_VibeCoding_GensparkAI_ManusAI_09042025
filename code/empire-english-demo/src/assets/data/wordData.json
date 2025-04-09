@@ -1,0 +1,26 @@
+{
+  "nouns": [
+    {"word": "apple", "translation": "quả táo", "question": "What is a round fruit that is typically red or green?"},
+    {"word": "book", "translation": "quyển sách", "question": "What do you read with pages and a cover?"},
+    {"word": "house", "translation": "ngôi nhà", "question": "Where do people live?"},
+    {"word": "tree", "translation": "cái cây", "question": "What grows in the ground and has leaves?"},
+    {"word": "car", "translation": "xe hơi", "question": "What do people drive on the road?"},
+    {"word": "dog", "translation": "con chó", "question": "What is a common pet that barks?"},
+    {"word": "cat", "translation": "con mèo", "question": "What is a common pet that meows?"},
+    {"word": "sun", "translation": "mặt trời", "question": "What gives us light during the day?"},
+    {"word": "moon", "translation": "mặt trăng", "question": "What shines in the night sky?"},
+    {"word": "star", "translation": "ngôi sao", "question": "What twinkles in the night sky?"}
+  ],
+  "verbs": [
+    {"word": "run", "translation": "chạy", "question": "What do you do when you move quickly with your legs?"},
+    {"word": "write", "translation": "viết", "question": "What do you do when you use a pen on paper?"},
+    {"word": "read", "translation": "đọc", "question": "What do you do with a book?"},
+    {"word": "eat", "translation": "ăn", "question": "What do you do with food?"},
+    {"word": "drink", "translation": "uống", "question": "What do you do with water?"},
+    {"word": "sleep", "translation": "ngủ", "question": "What do you do at night in bed?"},
+    {"word": "walk", "translation": "đi bộ", "question": "What do you do when you move slowly with your legs?"},
+    {"word": "talk", "translation": "nói", "question": "What do you do when you use your voice?"},
+    {"word": "listen", "translation": "nghe", "question": "What do you do with your ears?"},
+    {"word": "see", "translation": "nhìn", "question": "What do you do with your eyes?"}
+  ]
+} 
