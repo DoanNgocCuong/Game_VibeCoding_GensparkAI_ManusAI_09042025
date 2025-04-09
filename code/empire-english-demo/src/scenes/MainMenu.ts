@@ -1,23 +1,32 @@
-import Phaser from 'phaser';
+import { Scene, GameObjects } from 'phaser';
 
-export class MainMenu extends Phaser.Scene {
-  constructor() {
-    super('MainMenu');
-  }
+export class MainMenu extends Scene
+{
+    background: GameObjects.Image;
+    logo: GameObjects.Image;
+    title: GameObjects.Text;
 
-  create() {
-    // Title
-    this.add.text(400, 200, 'Empire of English', { fontSize: '32px' }).setOrigin(0.5);
-    
-    // Play button
-    const playButton = this.add.image(400, 300, 'button')
-      .setInteractive()
-      .setScale(2);
-    
-    this.add.text(400, 300, 'Play Demo', { fontSize: '20px' }).setOrigin(0.5);
-    
-    playButton.on('pointerdown', () => {
-      this.scene.start('Game');
-    });
-  }
-} 
+    constructor ()
+    {
+        super('MainMenu');
+    }
+
+    create ()
+    {
+        this.background = this.add.image(512, 384, 'background');
+
+        this.logo = this.add.image(512, 300, 'logo');
+
+        this.title = this.add.text(512, 460, 'Main Menu', {
+            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5);
+
+        this.input.once('pointerdown', () => {
+
+            this.scene.start('Game');
+
+        });
+    }
+}
