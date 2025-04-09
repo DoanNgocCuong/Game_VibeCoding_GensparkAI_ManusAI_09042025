@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 export default class Preload extends Phaser.Scene {
     constructor() {
-        super('Preload');
+        super({ key: 'Preload' });
     }
 
     preload() {
@@ -11,7 +11,10 @@ export default class Preload extends Phaser.Scene {
             console.error('Error loading asset:', fileObj.key);
         });
 
-        // Load all assets with error handling
+        // Load wordData first
+        this.load.json('wordData', 'assets/data/wordData.json');
+
+        // Load all image assets with error handling
         const assets = [
             { key: 'background', path: 'assets/background.jpg' },
             { key: 'villager', path: 'assets/villager.jpg' },
@@ -58,11 +61,19 @@ export default class Preload extends Phaser.Scene {
         
         // Clean up and start game
         this.load.on('complete', () => {
+            // Verify wordData is loaded
+            const wordData = this.cache.json.get('wordData');
+            if (!wordData || !wordData.nouns || !wordData.verbs) {
+                console.error('WordData not loaded correctly');
+                return;
+            }
+
             progressBar.destroy();
             progressBox.destroy();
             loadingText.destroy();
             percentText.destroy();
             
+            console.log('Loading complete, starting Game scene...');
             this.scene.start('Game');
         });
     }

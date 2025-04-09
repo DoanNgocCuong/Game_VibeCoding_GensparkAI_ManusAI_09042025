@@ -1,4 +1,6 @@
-import { Game } from "phaser";
+import 'phaser';
 import config from './config';
 
-export default new Game(config);
+window.addEventListener('load', () => {
+    new Phaser.Game(config);
+});

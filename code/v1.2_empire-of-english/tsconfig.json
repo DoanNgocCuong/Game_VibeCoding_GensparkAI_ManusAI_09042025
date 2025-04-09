@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
-        "target": "ES2022",
+        "target": "ES2020",
         "useDefineForClassFields": true,
         "module": "ESNext",
         "lib": [
-            "ES2022",
+            "ES2020",
             "DOM",
             "DOM.Iterable"
         ],
@@ -20,15 +20,7 @@
         "strictPropertyInitialization": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": true,
-        "forceConsistentCasingInFileNames": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        }
+        "noFallthroughCasesInSwitch": true
     },
     "include": [
         "src"

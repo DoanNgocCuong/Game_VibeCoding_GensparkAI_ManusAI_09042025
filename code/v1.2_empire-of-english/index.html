@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire of English: Conquer Through Communication</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            position: relative;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">Loading game...</div>
+    </div>
+
+    <!-- Phaser 3 from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    
+    <!-- Game Scripts -->
+    <script src="src/utils/Constants.js"></script>
+    <script src="src/utils/QuizManager.js"></script>
+    
+    <script src="src/objects/Villager.js"></script>
+    <script src="src/objects/Resource.js"></script>
+    <script src="src/objects/FoodResource.js"></script>
+    <script src="src/objects/WoodResource.js"></script>
+    
+    <script src="src/ui/ResourceBar.js"></script>
+    <script src="src/ui/BuildMenu.js"></script>
+    <script src="src/ui/QuizPopup.js"></script>
+    
+    <script src="src/scenes/BootScene.js"></script>
+    <script src="src/scenes/GameScene.js"></script>
+    <script src="src/scenes/UIScene.js"></script>
+    
+    <script src="src/main.js"></script>
+</body>
+</html>

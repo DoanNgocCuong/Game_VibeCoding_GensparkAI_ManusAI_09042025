@@ -1,76 +1,108 @@
 export default class LanguageQuiz {
     private scene: Phaser.Scene;
-    
+    private background?: Phaser.GameObjects.Rectangle;
+    private questionText?: Phaser.GameObjects.Text;
+    private inputElement?: HTMLInputElement;
+    private submitButton?: Phaser.GameObjects.Text;
+
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
     }
-    
-    showQuiz(question: string, correctAnswer: string, onCorrect: () => void, onWrong: () => void): void {
-        // Create quiz background
-        const bg = this.scene.add.rectangle(400, 300, 600, 400, 0x000000, 0.8);
-        bg.setDepth(100);
-        bg.setInteractive();
-        
-        // Display question
-        const questionText = this.scene.add.text(400, 200, question, 
-            { fontSize: '24px', align: 'center', wordWrap: { width: 500 } });
-        questionText.setOrigin(0.5);
-        questionText.setDepth(100);
-        
-        // Create input field
-        const inputField = document.createElement('input');
-        inputField.style.position = 'absolute';
-        inputField.style.left = `${window.innerWidth / 2 - 100}px`;
-        inputField.style.top = `${window.innerHeight / 2}px`;
-        inputField.style.width = '200px';
-        inputField.style.height = '30px';
-        inputField.style.fontSize = '16px';
-        inputField.style.zIndex = '1000';
-        document.body.appendChild(inputField);
-        
-        // Create submit button
-        const submitButton = this.scene.add.text(400, 350, 'Submit', 
-            { fontSize: '24px', backgroundColor: '#4a4', padding: { x: 10, y: 5 } });
-        submitButton.setOrigin(0.5);
-        submitButton.setInteractive({ useHandCursor: true });
-        submitButton.setDepth(100);
-        
-        // Handle submit click
-        submitButton.on('pointerdown', () => {
-            const answer = inputField.value.trim().toLowerCase();
+
+    showQuiz(question: string, correctAnswer: string, onCorrect: () => void, onWrong: () => void) {
+        try {
+            // Clean up any existing quiz elements
+            this.cleanup();
             
-            if (answer === correctAnswer.toLowerCase()) {
-                // Correct answer
-                const correct = this.scene.add.text(400, 400, 'Correct!', 
-                    { fontSize: '24px', color: '#4f4' });
-                correct.setOrigin(0.5);
-                correct.setDepth(100);
+            // Create background
+            this.background = this.scene.add.rectangle(400, 300, 600, 300, 0x000000, 0.8);
+            
+            // Add question text
+            this.questionText = this.scene.add.text(400, 200, question, {
+                fontSize: '24px',
+                color: '#ffffff',
+                align: 'center',
+                wordWrap: { width: 500 }
+            }).setOrigin(0.5);
+            
+            // Create input element
+            this.inputElement = document.createElement('input');
+            this.inputElement.style.position = 'absolute';
+            this.inputElement.style.left = '300px';
+            this.inputElement.style.top = '280px';
+            this.inputElement.style.width = '200px';
+            this.inputElement.style.padding = '8px';
+            this.inputElement.style.fontSize = '16px';
+            document.body.appendChild(this.inputElement);
+            this.inputElement.focus();
+            
+            // Create submit button
+            this.submitButton = this.scene.add.text(400, 350, 'Submit', {
+                fontSize: '24px',
+                backgroundColor: '#4a4',
+                padding: { x: 15, y: 8 }
+            })
+            .setOrigin(0.5)
+            .setInteractive();
+            
+            // Handle submit
+            const handleSubmit = () => {
+                if (!this.inputElement) return;
                 
-                // Close quiz after 1 second
-                this.scene.time.delayedCall(1000, () => {
-                    bg.destroy();
-                    questionText.destroy();
-                    submitButton.destroy();
-                    correct.destroy();
-                    document.body.removeChild(inputField);
+                const answer = this.inputElement.value.trim().toLowerCase();
+                if (answer === correctAnswer.toLowerCase()) {
+                    this.showFeedback('Correct!', '#4a4');
+                    this.cleanup();
                     onCorrect();
-                });
-            } else {
-                // Wrong answer
-                const wrong = this.scene.add.text(400, 400, 'Wrong! Try again.', 
-                    { fontSize: '24px', color: '#f44' });
-                wrong.setOrigin(0.5);
-                wrong.setDepth(100);
-                
-                // Remove wrong message after 1 second
-                this.scene.time.delayedCall(1000, () => {
-                    wrong.destroy();
+                } else {
+                    this.showFeedback('Try again!', '#f44');
+                    this.cleanup();
                     onWrong();
-                });
+                }
+            };
+            
+            // Add submit button click handler
+            this.submitButton.on('pointerdown', handleSubmit);
+            
+            // Add enter key handler
+            this.inputElement.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSubmit();
+                }
+            });
+
+        } catch (error) {
+            console.error('Error showing quiz:', error);
+            this.cleanup();
+            onWrong(); // Default to wrong answer on error
+        }
+    }
+
+    private showFeedback(message: string, color: string) {
+        try {
+            const feedbackText = this.scene.add.text(400, 250, message, {
+                fontSize: '32px',
+                color: color
+            }).setOrigin(0.5);
+            
+            this.scene.time.delayedCall(1000, () => {
+                feedbackText.destroy();
+            });
+        } catch (error) {
+            console.error('Error showing feedback:', error);
+        }
+    }
+
+    private cleanup() {
+        try {
+            this.background?.destroy();
+            this.questionText?.destroy();
+            this.submitButton?.destroy();
+            if (this.inputElement && document.body.contains(this.inputElement)) {
+                this.inputElement.remove();
             }
-        });
-        
-        // Focus input field
-        setTimeout(() => inputField.focus(), 100);
+        } catch (error) {
+            console.error('Error during cleanup:', error);
+        }
     }
 } 
