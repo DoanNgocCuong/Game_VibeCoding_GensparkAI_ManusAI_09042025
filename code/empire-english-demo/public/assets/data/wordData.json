@@ -1,16 +1,56 @@
 {
     "nouns": [
-        {"word": "apple", "translation": "quả táo", "question": "What is a round fruit that is typically red or green?"},
-        {"word": "book", "translation": "quyển sách", "question": "What do you read with pages and a cover?"},
-        {"word": "house", "translation": "ngôi nhà", "question": "What is a building where people live?"},
-        {"word": "tree", "translation": "cái cây", "question": "What has branches, leaves and grows from the ground?"},
-        {"word": "cat", "translation": "con mèo", "question": "What is a small furry pet that meows?"}
+        {
+            "word": "food",
+            "question": "What do you eat to survive?",
+            "translation": "thức ăn"
+        },
+        {
+            "word": "wood",
+            "question": "What material comes from trees?",
+            "translation": "gỗ"
+        },
+        {
+            "word": "house",
+            "question": "Where do people live?",
+            "translation": "nhà"
+        },
+        {
+            "word": "villager",
+            "question": "Who lives in a village?",
+            "translation": "dân làng"
+        },
+        {
+            "word": "town",
+            "question": "What is bigger than a village but smaller than a city?",
+            "translation": "thị trấn"
+        }
     ],
     "verbs": [
-        {"word": "run", "translation": "chạy", "question": "What do you do when you move quickly with your legs?"},
-        {"word": "write", "translation": "viết", "question": "What do you do when you use a pen on paper?"},
-        {"word": "speak", "translation": "nói", "question": "What do you do with your mouth to communicate?"},
-        {"word": "eat", "translation": "ăn", "question": "What do you do with food at mealtimes?"},
-        {"word": "sleep", "translation": "ngủ", "question": "What do you do in bed at night with your eyes closed?"}
+        {
+            "word": "build",
+            "question": "What do you do to create a house?",
+            "translation": "xây dựng"
+        },
+        {
+            "word": "collect",
+            "question": "What do you do to gather resources?",
+            "translation": "thu thập"
+        },
+        {
+            "word": "work",
+            "question": "What do villagers do to earn money?",
+            "translation": "làm việc"
+        },
+        {
+            "word": "harvest",
+            "question": "What do farmers do with crops?",
+            "translation": "thu hoạch"
+        },
+        {
+            "word": "grow",
+            "question": "What do plants do over time?",
+            "translation": "phát triển"
+        }
     ]
 } 

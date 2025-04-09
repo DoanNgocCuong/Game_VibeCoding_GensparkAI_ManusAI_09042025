@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import MainScene from './scenes/MainScene';
+import Preload from './scenes/Preload';
+import Game from './scenes/Game';
 
 export default {
     type: Phaser.AUTO,
@@ -18,5 +19,5 @@ export default {
             debug: false
         }
     },
-    scene: [MainScene]
+    scene: [Preload, Game]
 }; 
