@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Task Theo Giá Trị</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        .progress-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        
+        .tag-pill {
+            border-radius: 15px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .task-animation {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-up-animation {
+            animation: pulse 1s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(88, 80, 236, 0.7); }
+            100% { transform: scale(1); }
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-indigo-700">Quản Lý Task Theo Giá Trị</h1>
+            <p class="text-gray-600 mt-2">Quy đổi công việc thành giá trị và theo dõi sự phát triển của bạn</p>
+        </header>
+
+        <!-- Main content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Task input form -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Thêm Task Mới</h2>
+                <form id="taskForm" class="space-y-4">
+                    <div>
+                        <label for="taskName" class="block text-sm font-medium text-gray-700">Tên Task</label>
+                        <input type="text" id="taskName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                    </div>
+                    
+                    <div>
+                        <label for="taskTag" class="block text-sm font-medium text-gray-700">Tag</label>
+                        <div class="flex">
+                            <input list="tagOptions" id="taskTag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                            <datalist id="tagOptions"></datalist>
+                        </div>
+                        <div id="popularTags" class="mt-2 flex flex-wrap"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="taskValue" class="block text-sm font-medium text-gray-700">Giá Trị (VNĐ)</label>
+                        <input type="number" id="taskValue" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <p class="text-sm text-gray-500 mt-1">Nhập số dương cho thu nhập, số âm cho chi phí</p>
+                    </div>
+                    
+                    <div>
+                        <label for="taskDate" class="block text-sm font-medium text-gray-700">Ngày</label>
+                        <input type="date" id="taskDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                        Thêm Task
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tag levels and experience -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Level của Các Tag</h2>
+                <div id="tagLevels" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tag levels will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Task list -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Task của Hôm Nay</h2>
+                <div class="flex items-center space-x-2">
+                    <button id="prevDayBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded transition duration-300">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="currentDateDisplay" class="text-gray-700 font-medium"></span>
+                    <button id="nextDayBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded transition duration-300">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button id="todayBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded transition duration-300 ml-2">
+                        Hôm nay
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <span class="text-sm text-gray-500">Tổng tiền:</span>
+                        <span id="dailyTotal" class="ml-2 text-lg font-bold"></span>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Số task:</span>
+                        <span id="taskCount" class="ml-2 font-medium"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="taskList" class="space-y-3">
+                <!-- Tasks will be generated here -->
+            </div>
+            
+            <div id="emptyState" class="hidden text-center py-8">
+                <div class="text-gray-400 text-xl mb-2"><i class="fas fa-tasks"></i></div>
+                <p class="text-gray-500">Chưa có task nào cho ngày này. Hãy thêm task mới!</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Thu Nhập Hàng Ngày</h2>
+                <div class="chart-container">
+                    <canvas id="dailyIncomeChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Phân Bố Theo Tag</h2>
+                <div class="chart-container">
+                    <canvas id="tagDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard summary -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Tổng Quan</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h3 class="text-sm font-medium text-green-700">Tổng Thu Nhập</h3>
+                    <p id="totalIncome" class="text-2xl font-bold text-green-600 mt-1"></p>
+                </div>
+                
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h3 class="text-sm font-medium text-red-700">Tổng Chi Phí</h3>
+                    <p id="totalExpense" class="text-2xl font-bold text-red-600 mt-1"></p>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 class="text-sm font-medium text-blue-700">Số Dư</h3>
+                    <p id="netBalance" class="text-2xl font-bold text-blue-600 mt-1"></p>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Tag Hoạt Động Nhiều Nhất</h3>
+                <div id="topTags" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Top tags will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-16 text-center text-gray-500 text-sm">
+            <p>&copy; 2023 Quản Lý Task Theo Giá Trị. Tất cả dữ liệu được lưu trữ tại trình duyệt của bạn.</p>
+        </footer>
+    </div>
+
+    <!-- Notification system -->
+    <div id="notificationContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // Data structure
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let tags = JSON.parse(localStorage.getItem('tags')) || {};
+        let currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+        // Charts
+        let dailyIncomeChart = null;
+        let tagDistributionChart = null;
+
+        // Constants for game mechanics
+        const XP_PER_1000_VND = 1; // 1 XP per 1,000 VND
+        const LEVEL_XP_BASE = 100; // Base XP required for level 1
+        const LEVEL_XP_MULTIPLIER = 1.5; // Each level requires 1.5x more XP
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setCurrentDateDisplay();
+            setupEventListeners();
+            updateTagOptions();
+            renderTaskList();
+            updateTagLevels();
+            updateCharts();
+            updateDashboard();
+        }
+
+        function setupEventListeners() {
+            // Task form submission
+            document.getElementById('taskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTask();
+            });
+
+            // Date navigation
+            document.getElementById('prevDayBtn').addEventListener('click', () => navigateDate(-1));
+            document.getElementById('nextDayBtn').addEventListener('click', () => navigateDate(1));
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+                setCurrentDateDisplay();
+                renderTaskList();
+            });
+
+            // Set default date to today
+            const today = new Date();
+            document.getElementById('taskDate').valueAsDate = today;
+        }
+
+        function addTask() {
+            const taskName = document.getElementById('taskName').value.trim();
+            const taskTag = document.getElementById('taskTag').value.trim();
+            const taskValue = parseInt(document.getElementById('taskValue').value);
+            const taskDate = new Date(document.getElementById('taskDate').value);
+            taskDate.setHours(0, 0, 0, 0);
+
+            if (!taskName || !taskTag || isNaN(taskValue)) {
+                showNotification('Vui lòng điền đầy đủ thông tin', 'error');
+                return;
+            }
+
+            const newTask = {
+                id: Date.now(),
+                name: taskName,
+                tag: taskTag,
+                value: taskValue,
+                date: taskDate.toISOString(),
+                timestamp: Date.now()
+            };
+
+            tasks.push(newTask);
+            saveData();
+
+            // Add XP for the tag
+            addTagXP(taskTag, Math.abs(taskValue));
+
+            // Reset form
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskDate').valueAsDate = new Date();
+
+            // Update UI
+            renderTaskList();
+            updateTagLevels();
+            updateCharts();
+            updateDashboard();
+            updateTagOptions();
+
+            showNotification('Task đã được thêm thành công', 'success');
+        }
+
+        function addTagXP(tagName, value) {
+            if (!tags[tagName]) {
+                tags[tagName] = {
+                    xp: 0,
+                    level: 0,
+                    color: getRandomColor(),
+                    taskCount: 0
+                };
+            }
+
+            const xpToAdd = Math.floor(Math.abs(value) / 1000 * XP_PER_1000_VND);
+            const oldLevel = calculateLevel(tags[tagName].xp);
+            
+            tags[tagName].xp += xpToAdd;
+            tags[tagName].taskCount = (tags[tagName].taskCount || 0) + 1;
+            
+            const newLevel = calculateLevel(tags[tagName].xp);
+            tags[tagName].level = newLevel;
+            
+            saveData();
+            
+            if (newLevel > oldLevel) {
+                showNotification(`Tag "${tagName}" đã lên level ${newLevel}!`, 'level-up');
+            }
+        }
+
+        function calculateLevel(xp) {
+            let level = 0;
+            let requiredXP = LEVEL_XP_BASE;
+            
+            while (xp >= requiredXP) {
+                level++;
+                xp -= requiredXP;
+                requiredXP = Math.floor(LEVEL_XP_BASE * Math.pow(LEVEL_XP_MULTIPLIER, level));
+            }
+            
+            return level;
+        }
+
+        function calculateXPForNextLevel(currentLevel) {
+            return Math.floor(LEVEL_XP_BASE * Math.pow(LEVEL_XP_MULTIPLIER, currentLevel));
+        }
+
+        function calculateXPProgress(xp) {
+            let level = 0;
+            let totalXP = xp;
+            let requiredXP = LEVEL_XP_BASE;
+            
+            while (totalXP >= requiredXP) {
+                level++;
+                totalXP -= requiredXP;
+                requiredXP = Math.floor(LEVEL_XP_BASE * Math.pow(LEVEL_XP_MULTIPLIER, level));
+            }
+            
+            return {
+                currentXP: totalXP,
+                requiredXP: requiredXP,
+                percentage: (totalXP / requiredXP) * 100
+            };
+        }
+
+        function deleteTask(taskId) {
+            const taskIndex = tasks.findIndex(task => task.id === taskId);
+            
+            if (taskIndex !== -1) {
+                const task = tasks[taskIndex];
+                
+                // Remove the task
+                tasks.splice(taskIndex, 1);
+                saveData();
+                
+                // Remove XP from tag (optional - you might want to keep XP)
+                // If you want to remove XP, uncomment the following:
+                /*
+                if (tags[task.tag]) {
+                    const xpToRemove = Math.floor(Math.abs(task.value) / 1000 * XP_PER_1000_VND);
+                    tags[task.tag].xp = Math.max(0, tags[task.tag].xp - xpToRemove);
+                    tags[task.tag].level = calculateLevel(tags[task.tag].xp);
+                    tags[task.tag].taskCount = Math.max(0, (tags[task.tag].taskCount || 0) - 1);
+                    saveData();
+                }
+                */
+                
+                // Update UI
+                renderTaskList();
+                updateTagLevels();
+                updateCharts();
+                updateDashboard();
+                
+                showNotification('Task đã được xóa', 'info');
+            }
+        }
+
+        function renderTaskList() {
+            const taskListElement = document.getElementById('taskList');
+            const emptyStateElement = document.getElementById('emptyState');
+            const taskCountElement = document.getElementById('taskCount');
+            const dailyTotalElement = document.getElementById('dailyTotal');
+            
+            // Filter tasks for the current day
+            const currentDateStr = currentDate.toISOString().split('T')[0];
+            const dailyTasks = tasks.filter(task => {
+                const taskDate = new Date(task.date);
+                return taskDate.toISOString().split('T')[0] === currentDateStr;
+            }).sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Calculate daily total
+            const dailyTotal = dailyTasks.reduce((sum, task) => sum + task.value, 0);
+            dailyTotalElement.textContent = formatCurrency(dailyTotal);
+            dailyTotalElement.className = dailyTotal >= 0 ? 'ml-2 text-lg font-bold text-green-600' : 'ml-2 text-lg font-bold text-red-600';
+            
+            // Update task count
+            taskCountElement.textContent = dailyTasks.length;
+            
+            // Show/hide empty state
+            if (dailyTasks.length === 0) {
+                taskListElement.innerHTML = '';
+                emptyStateElement.classList.remove('hidden');
+            } else {
+                emptyStateElement.classList.add('hidden');
+                
+                // Render tasks
+                taskListElement.innerHTML = '';
+                dailyTasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'bg-gray-50 p-4 rounded-lg border-l-4 flex justify-between items-center task-animation';
+                    taskElement.style.borderLeftColor = tags[task.tag] ? tags[task.tag].color : '#CBD5E0';
+                    
+                    taskElement.innerHTML = `
+                        <div class="flex-1">
+                            <div class="flex items-start">
+                                <h3 class="font-medium text-gray-800">${task.name}</h3>
+                                <span class="tag-pill ml-2 text-xs" style="background-color: ${tags[task.tag] ? tags[task.tag].color + '33' : '#CBD5E033'}; color: ${tags[task.tag] ? tags[task.tag].color : '#718096'};">
+                                    ${task.tag}
+                                </span>
+                            </div>
+                            <div class="mt-1 text-sm text-gray-500">
+                                ${formatTime(new Date(task.timestamp))}
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-lg font-semibold ${task.value >= 0 ? 'text-green-600' : 'text-red-600'}">
+                                ${formatCurrency(task.value)}
+                            </span>
+                            <button class="ml-4 text-gray-400 hover:text-red-500 delete-task transition-colors duration-200" data-task-id="${task.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    taskListElement.appendChild(taskElement);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-task').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const taskId = parseInt(this.getAttribute('data-task-id'));
+                        deleteTask(taskId);
+                    });
+                });
+            }
+        }
+
+        function updateTagLevels() {
+            const tagLevelsElement = document.getElementById('tagLevels');
+            tagLevelsElement.innerHTML = '';
+            
+            // Sort tags by level and XP
+            const sortedTags = Object.keys(tags).sort((a, b) => {
+                if (tags[b].level !== tags[a].level) {
+                    return tags[b].level - tags[a].level;
+                }
+                return tags[b].xp - tags[a].xp;
+            });
+            
+            if (sortedTags.length === 0) {
+                tagLevelsElement.innerHTML = '<div class="col-span-full text-center py-4 text-gray-500">Chưa có tag nào. Hãy thêm task mới để tạo tag!</div>';
+                return;
+            }
+            
+            sortedTags.forEach(tagName => {
+                const tag = tags[tagName];
+                const progress = calculateXPProgress(tag.xp);
+                
+                const tagElement = document.createElement('div');
+                tagElement.className = 'bg-gray-50 p-4 rounded-lg border';
+                
+                tagElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="tag-pill" style="background-color: ${tag.color}33; color: ${tag.color};">
+                            ${tagName}
+                        </span>
+                        <span class="text-indigo-700 font-bold">Level ${tag.level}</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>XP: ${tag.xp}</span>
+                            <span>${progress.currentXP}/${progress.requiredXP}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress.percentage}%; background-color: ${tag.color};"></div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500">
+                        <span>${tag.taskCount || 0} task đã hoàn thành</span>
+                    </div>
+                `;
+                
+                tagLevelsElement.appendChild(tagElement);
+            });
+        }
+
+        function updateCharts() {
+            // Destroy existing charts if they exist
+            if (dailyIncomeChart) dailyIncomeChart.destroy();
+            if (tagDistributionChart) tagDistributionChart.destroy();
+            
+            createDailyIncomeChart();
+            createTagDistributionChart();
+        }
+
+        function createDailyIncomeChart() {
+            // Get last 7 days data
+            const dates = [];
+            const incomes = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                date.setHours(0, 0, 0, 0);
+                
+                const dateStr = date.toISOString().split('T')[0];
+                const dateDisplay = formatDate(date, 'short');
+                
+                const dailyTotal = tasks.filter(task => {
+                    const taskDate = new Date(task.date);
+                    return taskDate.toISOString().split('T')[0] === dateStr;
+                }).reduce((sum, task) => sum + task.value, 0);
+                
+                dates.push(dateDisplay);
+                incomes.push(dailyTotal);
+            }
+            
+            const ctx = document.getElementById('dailyIncomeChart').getContext('2d');
+            
+            dailyIncomeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Thu nhập (VNĐ)',
+                        data: incomes,
+                        backgroundColor: incomes.map(value => value >= 0 ? 'rgba(72, 187, 120, 0.7)' : 'rgba(229, 62, 62, 0.7)'),
+                        borderColor: incomes.map(value => value >= 0 ? 'rgb(47, 133, 90)' : 'rgb(197, 48, 48)'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value, false);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTagDistributionChart() {
+            // Calculate value distribution by tag
+            const tagValues = {};
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+            
+            // Filter tasks from the last 7 days
+            const recentTasks = tasks.filter(task => {
+                const taskDate = new Date(task.date);
+                return taskDate >= sevenDaysAgo && taskDate <= today;
+            });
+            
+            recentTasks.forEach(task => {
+                if (!tagValues[task.tag]) {
+                    tagValues[task.tag] = 0;
+                }
+                tagValues[task.tag] += Math.abs(task.value);
+            });
+            
+            // Prepare chart data
+            const chartLabels = Object.keys(tagValues);
+            const chartData = chartLabels.map(tag => tagValues[tag]);
+            const chartColors = chartLabels.map(tag => tags[tag] ? tags[tag].color : getRandomColor());
+            
+            const ctx = document.getElementById('tagDistributionChart').getContext('2d');
+            
+            if (chartLabels.length === 0) {
+                ctx.canvas.height = 150;
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#718096';
+                ctx.textAlign = 'center';
+                ctx.fillText('Không có dữ liệu cho 7 ngày qua', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            tagDistributionChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: chartColors.map(color => color + 'CC'),
+                        borderColor: chartColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDashboard() {
+            // Calculate totals
+            const totalIncome = tasks.filter(task => task.value > 0).reduce((sum, task) => sum + task.value, 0);
+            const totalExpense = tasks.filter(task => task.value < 0).reduce((sum, task) => sum + task.value, 0);
+            const netBalance = totalIncome + totalExpense;
+            
+            // Update summary values
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+            document.getElementById('netBalance').textContent = formatCurrency(netBalance);
+            
+            // Calculate top tags
+            const tagStats = {};
+            
+            tasks.forEach(task => {
+                if (!tagStats[task.tag]) {
+                    tagStats[task.tag] = {
+                        totalValue: 0,
+                        taskCount: 0
+                    };
+                }
+                
+                tagStats[task.tag].totalValue += task.value;
+                tagStats[task.tag].taskCount += 1;
+            });
+            
+            const topTags = Object.keys(tagStats)
+                .sort((a, b) => tagStats[b].taskCount - tagStats[a].taskCount)
+                .slice(0, 3);
+            
+            // Update top tags section
+            const topTagsElement = document.getElementById('topTags');
+            topTagsElement.innerHTML = '';
+            
+            if (topTags.length === 0) {
+                topTagsElement.innerHTML = '<div class="col-span-full text-center py-4 text-gray-500">Chưa có dữ liệu.</div>';
+                return;
+            }
+            
+            topTags.forEach(tagName => {
+                const stats = tagStats[tagName];
+                const tagElement = document.createElement('div');
+                tagElement.className = 'bg-gray-50 p-4 rounded-lg border-l-4';
+                tagElement.style.borderLeftColor = tags[tagName] ? tags[tagName].color : '#CBD5E0';
+                
+                tagElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="tag-pill" style="background-color: ${tags[tagName] ? tags[tagName].color + '33' : '#CBD5E033'}; color: ${tags[tagName] ? tags[tagName].color : '#718096'};">
+                            ${tagName}
+                        </span>
+                        <span class="text-sm font-medium">${stats.taskCount} task</span>
+                    </div>
+                    <div class="mt-2 ${stats.totalValue >= 0 ? 'text-green-600' : 'text-red-600'} font-bold">
+                        ${formatCurrency(stats.totalValue)}
+                    </div>
+                    <div class="mt-1 text-xs text-gray-500">
+                        Level ${tags[tagName] ? tags[tagName].level : 0}
+                    </div>
+                `;
+                
+                topTagsElement.appendChild(tagElement);
+            });
+        }
+
+        function updateTagOptions() {
+            const datalist = document.getElementById('tagOptions');
+            const popularTagsContainer = document.getElementById('popularTags');
+            
+            // Clear existing options
+            datalist.innerHTML = '';
+            popularTagsContainer.innerHTML = '';
+            
+            // Add options from existing tags
+            const tagNames = Object.keys(tags);
+            
+            tagNames.forEach(tagName => {
+                const option = document.createElement('option');
+                option.value = tagName;
+                datalist.appendChild(option);
+            });
+            
+            // Add popular tags buttons
+            const popularTags = tagNames
+                .sort((a, b) => (tags[b].taskCount || 0) - (tags[a].taskCount || 0))
+                .slice(0, 5);
+            
+            popularTags.forEach(tagName => {
+                const tagButton = document.createElement('button');
+                tagButton.type = 'button';
+                tagButton.className = 'tag-pill text-xs';
+                tagButton.style.backgroundColor = tags[tagName].color + '33';
+                tagButton.style.color = tags[tagName].color;
+                tagButton.textContent = tagName;
+                
+                tagButton.addEventListener('click', function() {
+                    document.getElementById('taskTag').value = tagName;
+                });
+                
+                popularTagsContainer.appendChild(tagButton);
+            });
+        }
+
+        function navigateDate(days) {
+            currentDate.setDate(currentDate.getDate() + days);
+            setCurrentDateDisplay();
+            renderTaskList();
+        }
+
+        function setCurrentDateDisplay() {
+            document.getElementById('currentDateDisplay').textContent = formatDate(currentDate);
+        }
+
+        function saveData() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('tags', JSON.stringify(tags));
+        }
+
+        function showNotification(message, type = 'info') {
+            const notificationContainer = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification-animation px-4 py-3 rounded-lg shadow-lg max-w-md';
+            
+            // Set styles based on notification type
+            let icon, bgColor, textColor;
+            
+            switch (type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle mr-2"></i>';
+                    bgColor = 'bg-green-100';
+                    textColor = 'text-green-800';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-exclamation-circle mr-2"></i>';
+                    bgColor = 'bg-red-100';
+                    textColor = 'text-red-800';
+                    break;
+                case 'level-up':
+                    icon = '<i class="fas fa-arrow-up mr-2"></i>';
+                    bgColor = 'bg-indigo-100';
+                    textColor = 'text-indigo-800';
+                    notification.classList.add('level-up-animation');
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle mr-2"></i>';
+                    bgColor = 'bg-blue-100';
+                    textColor = 'text-blue-800';
+            }
+            
+            notification.classList.add(bgColor, textColor);
+            notification.innerHTML = `${icon}${message}`;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notificationContainer.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Utility functions
+        function formatCurrency(value, withSymbol = true) {
+            const formatter = new Intl.NumberFormat('vi-VN', {
+                style: withSymbol ? 'currency' : 'decimal',
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            return formatter.format(value);
+        }
+
+        function formatDate(date, format = 'full') {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            
+            if (format === 'short') {
+                return `${day}/${month}`;
+            }
+            
+            const weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const weekday = weekdays[date.getDay()];
+            
+            return `${weekday}, ${day}/${month}/${year}`;
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            return `${hours}:${minutes}`;
+        }
+
+        function getRandomColor() {
+            const colors = [
+                '#F56565', // red
+                '#ED8936', // orange
+                '#ECC94B', // yellow
+                '#48BB78', // green
+                '#38B2AC', // teal
+                '#4299E1', // blue
+                '#667EEA', // indigo
+                '#9F7AEA', // purple
+                '#ED64A6', // pink
+            ];
+            
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>

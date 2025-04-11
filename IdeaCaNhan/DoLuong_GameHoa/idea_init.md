@@ -1,0 +1,4 @@
+``` Mình có thói quen là quy các task hàng ngày ra tiền. Trong 1 ngày có nhiều task.  - Chẳng hạn: Làm ... ở công ty - gắn TAG - gắn số tiền 100k chẳng hạn  Có task thì bị trừ tiền, chẳng hạn: chơi ... - gắn TAG Phí Time/... - số tiền là bị trừ 500k  ... nhiều tag như thế.  - Có biểu đồ để xem số tiền kiếm được trong ngày, có biểu đồ phân bố xem ngày hôm đó mình đầu tư vào các mảng nào  - Các tag được gắn kinh nghiệm và Game hoá.  Chẳng hạn các tag về AI, tag về Tư duy top 1%,... tích luỹ càng nhiều thì càng lên level ```  Game hoá 1 cách đơn giản trò sau. Càng tích luỹ nhiều thì level càng tăng. Dần dần càng lên nhiều kinh nghiệm thì SYSTEM càng được mở rộng
+
+---
+Game hoá như game: trông cây focus, hoặc focus trồng rong biển -> mở rộng hơn thành game ĐẾ CHẾ (XÂY DỰNG 1 SYSTEM)
