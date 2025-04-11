@@ -269,8 +269,21 @@
             const taskDate = new Date(document.getElementById('taskDate').value);
             taskDate.setHours(0, 0, 0, 0);
 
+            // Validate task name length and content
+            if (taskName.length < 2 || taskName.length > 100) {
+                showNotification('Tên task phải từ 2-100 ký tự', 'error');
+                return;
+            }
+
+            // Validate task value
             if (!taskName || !taskTag || isNaN(taskValue)) {
                 showNotification('Vui lòng điền đầy đủ thông tin', 'error');
+                return;
+            }
+
+            // Validate task value range
+            if (Math.abs(taskValue) < 1000 || Math.abs(taskValue) > 1000000000) {
+                showNotification('Giá trị task phải từ 1,000 đến 1,000,000,000 VNĐ', 'error');
                 return;
             }
 
@@ -845,10 +858,14 @@
         }
 
         function formatTime(date) {
+            // Format: "HH:mm, DD/MM/YYYY"
             const hours = date.getHours().toString().padStart(2, '0');
             const minutes = date.getMinutes().toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
             
-            return `${hours}:${minutes}`;
+            return `${hours}:${minutes}, ${day}/${month}/${year}`;
         }
 
         function getRandomColor() {
