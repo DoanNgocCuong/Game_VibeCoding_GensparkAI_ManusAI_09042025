@@ -1,0 +1,2 @@
+1. Drive: https://drive.google.com/drive/folders/1cdVhkZ7pp3JmsTm_w_IYhNPxkJ09ewYP 
+2. Figma: https://www.figma.com/board/Uplt7yld1wKAq7orADY0h3/1000-game-hackathon-workflow?node-id=0-1&p=f&t=N6jctGRGs5I0Aq03-0
