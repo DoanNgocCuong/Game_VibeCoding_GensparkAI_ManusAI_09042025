@@ -1,6 +1,12 @@
 # Game_VibeCoding_GensparkAI_ManusAI_09042025
 Game_VibeCoding_GensparkAI_ManusAI_09042025  - Cursor - Phaser
 
+```
+PhienChoTet0Dong_Web_gensparkAI_08042025
+Website test Prompt genspark sau 3 hôm nó ra mắt. Quá đẹp
+
+Link: https://page.genspark.site/page/toolu_015BqSjbeqQfchjsxqKSJVZ8/phien_cho_tet_visualization.html
+```
 
 git commit -m "EMPIRE OF ENGLISH - AGE OF EMPIRE - I. NAY EM TEST 2 LUỒNG BUILD GAME - để test khả năng của genspark trong hỗ trợ manus, cursor (ạ). 
 
