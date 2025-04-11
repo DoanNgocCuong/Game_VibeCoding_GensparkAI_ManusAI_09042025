@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Framework UI</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3a0ca3;
+            --secondary: #4cc9f0;
+            --accent: #f72585;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--gray-900);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Main Container - Three Column Layout */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Chat Section */
+        .chat-section {
+            width: 33.333%;
+            background-color: white;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: calc(100vh - 70px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Full Chat Interface */
+        .full-chat-interface {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-header {
+            padding: 1.25rem;
+            background-color: white;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-light);
+            background-image: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
+            border-radius: var(--radius-full);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chat-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 1.1rem;
+        }
+        
+        .chat-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.25rem;
+            background-color: var(--gray-100);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 80%;
+            border-radius: var(--radius-lg);
+            padding: 0.9rem 1.2rem;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .message:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .message.user {
+            margin-left: auto;
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 var(--radius-lg);
+        }
+        
+        .message.coach {
+            margin-right: auto;
+            background-color: white;
+            border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0;
+            color: var(--gray-800);
+        }
+        
+        .chat-input-area {
+            display: flex;
+            padding: 1rem 1.25rem;
+            background-color: white;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-full);
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-action-button {
+            background-color: var(--gray-200);
+            border: none;
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray-700);
+        }
+        
+        .chat-action-button:hover {
+            background-color: var(--gray-300);
+            transform: translateY(-2px);
+        }
+        
+        .chat-action-button.send {
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+        
+        .chat-action-button.send:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .attachment-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0 1.25rem;
+        }
+        
+        .attachment-item {
+            background-color: var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .attachment-item:hover {
+            background-color: var(--gray-300);
+        }
+        
+        .attachment-item i {
+            color: var(--primary);
+        }
+        
+        .recording-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--danger);
+            font-size: 0.9rem;
+            animation: blink 1.5s infinite;
+            padding: 0.5rem 1.25rem;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .recording-indicator.active {
+            display: flex;
+        }
+        
+        /* Content Section */
+        .content-section {
+            width: 66.667%;
+            padding: 2rem;
+            background-color: var(--gray-100);
+        }
+        
+        .phase-container {
+            display: none;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            height: 100%;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .phase-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .phase-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .phase-description {
+            margin-bottom: 2rem;
+            color: var(--gray-600);
+            font-size: 1.05rem;
+            max-width: 80%;
+        }
+        
+        /* Progress Indicator */
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 0 2.5rem;
+            padding: 0.5rem;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.75rem 0;
+            border-radius: var(--radius-md);
+        }
+        
+        .progress-step:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .progress-step:hover .step-circle {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.15);
+        }
+        
+        .progress-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            width: 80%;
+            height: 2px;
+            background-color: var(--gray-300);
+            z-index: 1;
+        }
+        
+        .progress-step.active:not(:last-child):after,
+        .progress-step.completed:not(:last-child):after {
+            background-color: var(--primary-light);
+        }
+        
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background-color: var(--gray-300);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 0.75rem;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        
+        .progress-step.active .step-circle {
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .progress-step.completed .step-circle {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .progress-step.completed .step-circle:before {
+            content: '✓';
+            font-size: 1.2rem;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .progress-step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .progress-step:hover .step-label {
+            color: var(--primary);
+        }
+        
+        /* Phase-Specific UI Elements */
+        
+        /* Basic Phase UI */
+        .audio-player {
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--radius-full);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+        
+        .audio-player:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .audio-player i {
+            font-size: 2rem;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .card.highlight {
+            border: 2px solid var(--primary);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(67, 97, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+        }
+        
+        .feedback-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            backdrop-filter: blur(3px);
+        }
+        
+        .feedback-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+            animation: fadeZoomIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeZoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .feedback-overlay.success {
+            border: 2px solid var(--success);
+        }
+        
+        .feedback-overlay.error {
+            border: 2px solid var(--danger);
+        }
+        
+        /* Conceptual Phase UI */
+        .dialogue-reconstruction {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .dialogue-area {
+            min-height: 200px;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-content: flex-start;
+            background-color: var(--gray-100);
+            transition: var(--transition);
+        }
+        
+        .dialogue-area:hover {
+            border-color: var(--primary-light);
+        }
+        
+        .dialogue-bubble {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.5rem;
+            margin: 0.5rem;
+            display: inline-block;
+            cursor: move;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .dialogue-bubble:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .dialogue-bubble.correct-position {
+            background-color: rgba(6, 214, 160, 0.1);
+            border: 1px solid var(--success);
+        }
+        
+        .demonstration-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1.5rem;
+        }
+        
+        .before-after {
+            flex: 1;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .before-after h4 {
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .before-after h4:before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: var(--radius-full);
+            background-color: var(--primary);
+        }
+        
+        /* Process Phase UI */
+        .process-coach {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            padding: 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .process-coach-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-light);
+            background-image: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
+            border-radius: var(--radius-full);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .process-coach-bubble {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            max-width: 80%;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .process-coach-bubble:after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            border-width: 10px 10px 10px 0;
+            border-style: solid;
+            border-color: transparent white transparent transparent;
+        }
+        
+        .role-play-simulation {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .interviewer-avatar {
+            width: 120px;
+            height: 120px;
+            background-color: var(--gray-300);
+            background-image: linear-gradient(135deg, var(--gray-300) 0%, var(--gray-400) 100%);
+            border-radius: var(--radius-full);
+            margin: 0 auto 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--gray-700);
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .interview-dialogue {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 200px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .response-area {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .response-input {
+            flex: 1;
+            padding: 1.25rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            resize: none;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        
+        .response-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .response-button {
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .response-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .performance-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .metric {
+            text-align: center;
+            flex: 1;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        
+        .metric:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+        
+        /* Review Phase UI */
+        .rapid-fire-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .timer {
+            background-color: var(--danger);
+            background-image: linear-gradient(135deg, var(--danger) 0%, var(--accent) 100%);
+            color: white;
+            border-radius: var(--radius-full);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            animation: timerPulse 1s infinite;
+        }
+        
+        @keyframes timerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .question-display {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.3rem;
+            min-height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+        
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .answer-option {
+            background-color: white;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        
+        .answer-option:hover {
+            background-color: var(--gray-100);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--dark);
+            background-image: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .score-item {
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        
+        .score-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .score-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            font-weight: 500;
+            margin-top: 0.3rem;
+        }
+        
+        /* Game Area (Placeholder) */
+        .game-area {
+            background-color: white;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--gray-500);
+            font-style: italic;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .game-area:hover {
+            border-color: var(--primary-light);
+        }
+        
+        /* Report Phase UI */
+        .report-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .dashboard-title {
+            font-size: 1.6rem;
+            color: var(--gray-900);
+            font-weight: 700;
+        }
+        
+        .dashboard-date {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            font-weight: 500;
+            background-color: var(--gray-100);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: var(--radius-full);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.8rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-icon.concepts {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+        
+        .stat-icon.vocabulary {
+            background-color: rgba(6, 214, 160, 0.15);
+            color: var(--success);
+        }
+        
+        .stat-icon.mistakes {
+            background-color: rgba(239, 71, 111, 0.15);
+            color: var(--danger);
+        }
+        
+        .stat-icon.time {
+            background-color: rgba(255, 209, 102, 0.15);
+            color: var(--warning);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .performance-chart {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+        
+        .chart-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-filter {
+            background-color: var(--gray-100);
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .chart-filter:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .chart-filter.active {
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+        
+        .chart-container {
+            height: 250px;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: flex-end;
+            padding: 2rem 1.5rem 3rem;
+            gap: 1.5rem;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background-image: linear-gradient(to top, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            position: relative;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chart-bar:hover {
+            transform: scaleY(1.03);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .chart-bar-label {
+            position: absolute;
+            bottom: -35px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+        
+        .chart-bar-value {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            font-weight: 600;
+            background-color: white;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        /* Enhanced Improvement Suggestions */
+        .improvement-suggestions {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .suggestion-header {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .suggestion-header i {
+            color: var(--warning);
+            font-size: 1.4rem;
+        }
+        
+        .suggestion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .suggestion-item {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .suggestion-header-row {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .suggestion-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            background-color: var(--gray-100);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary);
+            flex-shrink: 0;
+            font-size: 1.3rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .suggestion-title-area {
+            flex: 1;
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+        }
+        
+        .suggestion-description {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .interaction-example {
+            background-color: var(--gray-100);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .interaction-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .interaction-title i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .interaction-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .pronunciation-item {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            transition: var(--transition);
+        }
+        
+        .pronunciation-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .pronunciation-item.correct {
+            background-color: rgba(6, 214, 160, 0.1);
+            border-left: 3px solid var(--success);
+        }
+        
+        .pronunciation-item.incorrect {
+            background-color: rgba(239, 71, 111, 0.1);
+            border-left: 3px solid var(--danger);
+        }
+        
+        .pronunciation-word {
+            font-weight: 600;
+            flex: 1;
+            font-size: 1.05rem;
+        }
+        
+        .pronunciation-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .pronunciation-status.correct {
+            color: var(--success);
+        }
+        
+        .pronunciation-status.incorrect {
+            color: var(--danger);
+        }
+        
+        .pronunciation-correction {
+            font-style: italic;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+            line-height: 1.5;
+        }
+        
+        .sentence-example {
+            background-color: var(--gray-100);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sentence-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sentence-title i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .sentence-content {
+            position: relative;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+        }
+        
+        .sentence-spoken {
+            font-style: italic;
+            color: var(--gray-800);
+            padding: 1rem;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            line-height: 1.5;
+            border-left: 3px solid var(--primary-light);
+        }
+        
+        .sentence-feedback {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .feedback-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        
+        .feedback-point:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .feedback-point i {
+            margin-top: 0.2rem;
+            font-size: 1rem;
+        }
+        
+        .feedback-point i.positive {
+            color: var(--success);
+        }
+        
+        .feedback-point i.negative {
+            color: var(--danger);
+        }
+        
+        .feedback-point-text {
+            flex: 1;
+            line-height: 1.5;
+        }
+        
+        .improvement-action {
+            background-color: rgba(255, 209, 102, 0.15);
+            border-left: 3px solid var(--warning);
+            padding: 1.25rem;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .improvement-action-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .improvement-action-steps {
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .retry-button {
+            background-color: var(--danger);
+            background-image: linear-gradient(135deg, var(--danger) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 1.25rem;
+            display: inline-block;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .retry-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .retry-button i {
+            margin-right: 0.5rem;
+        }
+        
+        .audio-example {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-full);
+            width: fit-content;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .audio-example:hover {
+            background-color: var(--gray-200);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .audio-example i {
+            color: var(--danger);
+        }
+        
+        .audio-example-text {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+        
+        .continue-button {
+            background-color: var(--success);
+            background-image: linear-gradient(135deg, var(--success) 0%, #4cc9f0 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 2.5rem;
+            display: block;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition);
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .continue-button:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .continue-button i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .answer-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .phase-container {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .chat-section, .content-section {
+                width: 100%;
+            }
+            
+            .chat-section {
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+                height: auto;
+                min-height: 300px;
+                max-height: 50vh;
+            }
+            
+            .nav-title {
+                font-size: 1.3rem;
+            }
+            
+            .phase-title {
+                font-size: 1.5rem;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .demonstration-area {
+                flex-direction: column;
+            }
+            
+            .performance-metrics {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .suggestion-header-row {
+                flex-direction: column;
+            }
+            
+            .suggestion-icon {
+                margin-bottom: 0.75rem;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .progress-step:not(:last-child):after {
+                width: 70%;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-title">Teaching Framework</div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Chat Section (1/3 of screen) -->
+        <div class="chat-section">
+            <div class="full-chat-interface">
+                <div class="chat-header">
+                    <div class="chat-avatar">Coach</div>
+                    <div>
+                        <div class="chat-title">AI Coach</div>
+                        <div class="chat-subtitle">Teaching Assistant</div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message coach">
+                        Hello! I'm your AI Coach. I'll guide you through each phase of the learning process. What would you like to know?
+                    </div>
+                    <div class="message user">
+                        Can you explain what "buffer" means in computing?
+                    </div>
+                    <div class="message coach">
+                        A buffer is a temporary storage area used when transferring data between different devices or programs. It helps manage data flow when devices operate at different speeds.
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" placeholder="Type your message here...">
+                    <div class="chat-actions">
+                        <button class="chat-action-button" title="Attach file">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button class="chat-action-button" title="Record audio">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="chat-action-button send" title="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="attachment-preview">
+                    <!-- Will be populated when files are attached -->
+                </div>
+                
+                <div class="recording-indicator">
+                    <i class="fas fa-circle"></i> Recording... <span class="recording-time">0:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Section (2/3 of screen) -->
+        <div class="content-section">
+            <!-- Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-step active" data-phase="basic">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Basic</div>
+                </div>
+                <div class="progress-step" data-phase="conceptual">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Conceptual</div>
+                </div>
+                <div class="progress-step" data-phase="process">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Process</div>
+                </div>
+                <div class="progress-step" data-phase="review">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Review</div>
+                </div>
+                <div class="progress-step" data-phase="report">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Report</div>
+                </div>
+            </div>
+            
+            <!-- Phase 1: Basic -->
+            <div class="phase-container active" id="basic-phase">
+                <h2 class="phase-title">Basic Phase: Introduce Vocabulary & Phrases</h2>
+                <p class="phase-description">Match audio clips of technical terms with corresponding image or text cards to build strong associations between what is heard and its visual representation.</p>
+                
+                <div class="game-area">
+                    <!-- Audio Player -->
+                    <div class="audio-player">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    
+                    <!-- Cards Container -->
+                    <div class="cards-container">
+                        <div class="card">
+                            <span>Technical Term 1</span>
+                            <div class="feedback-overlay">
+                                <i class="fas fa-check-circle" style="color: var(--success); font-size: 2.5rem;"></i>
+                                <p>Great job!</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <span>Technical Term 2</span>
+                            <div class="feedback-overlay">
+                                <i class="fas fa-times-circle" style="color: var(--danger); font-size: 2.5rem;"></i>
+                                <p>Try again! Listen carefully.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <span>Technical Term 3</span>
+                        </div>
+                        <div class="card">
+                            <span>Technical Term 4</span>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gray-500); font-style: italic; z-index: -1;">
+                        [Game Content Placeholder - Vocabulary Matching Activity]
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 2: Conceptual -->
+            <div class="phase-container" id="conceptual-phase">
+                <h2 class="phase-title">Conceptual Phase: Scaffolding and Chunking for Speaking</h2>
+                <p class="phase-description">Reconstruct dialogues by reordering fragmented dialogue bubbles to form natural conversations.</p>
+                
+                <div class="game-area">
+                    <div class="dialogue-reconstruction">
+                        <div class="dialogue-area">
+                            <div class="dialogue-bubble">Hello, how can I assist you today?</div>
+                            <div class="dialogue-bubble">I'm having trouble with the network configuration.</div>
+                            <div class="dialogue-bubble">Let me check your system settings first.</div>
+                            <div class="dialogue-bubble">Thank you, I appreciate your help.</div>
+                        </div>
+                        
+                        <div class="demonstration-area">
+                            <div class="before-after">
+                                <h4>Before (Scrambled)</h4>
+                                <div class="dialogue-bubble" style="background-color: white; cursor: default;">Thank you, I appreciate your help.</div>
+                                <div class="dialogue-bubble" style="background-color: white; cursor: default;">I'm having trouble with the network configuration.</div>
+                                <div class="dialogue-bubble" style="background-color: white; cursor: default;">Hello, how can I assist you today?</div>
+                                <div class="dialogue-bubble" style="background-color: white; cursor: default;">Let me check your system settings first.</div>
+                            </div>
+                            
+                            <div class="before-after">
+                                <h4>After (Correct Order)</h4>
+                                <div class="dialogue-bubble correct-position">Hello, how can I assist you today?</div>
+                                <div class="dialogue-bubble correct-position">I'm having trouble with the network configuration.</div>
+                                <div class="dialogue-bubble correct-position">Let me check your system settings first.</div>
+                                <div class="dialogue-bubble correct-position">Thank you, I appreciate your help.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gray-500); font-style: italic; z-index: -1;">
+                        [Game Content Placeholder - Dialogue Reconstruction Activity]
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 3: Process -->
+            <div class="phase-container" id="process-phase">
+                <h2 class="phase-title">Process Phase: Task-Based Speaking Simulation</h2>
+                <p class="phase-description">Engage in a live role-play scenario, interacting with an avatar acting as the interviewer.</p>
+                
+                <div class="game-area">
+                    <div class="role-play-simulation">
+                        <div class="process-coach">
+                            <div class="process-coach-avatar">Coach</div>
+                            <div class="process-coach-bubble">
+                                Remember to use technical terms appropriately and maintain a professional tone.
+                            </div>
+                        </div>
+                        
+                        <div class="interviewer-avatar">Interviewer</div>
+                        
+                        <div class="interview-dialogue">
+                            <p><strong>Interviewer:</strong> Can you tell me about your experience with project management software?</p>
+                        </div>
+                        
+                        <div class="response-area">
+                            <textarea class="response-input" placeholder="Type your response here..."></textarea>
+                            <button class="response-button">Submit</button>
+                        </div>
+                        
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <div class="metric-value">75%</div>
+                                <div class="metric-label">Vocabulary Usage</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">Medium</div>
+                                <div class="metric-label">Speech Pace</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">Good</div>
+                                <div class="metric-label">Fluency</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gray-500); font-style: italic; z-index: -1;">
+                        [Game Content Placeholder - Live Role-Play Simulation]
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 4: Review -->
+            <div class="phase-container" id="review-phase">
+                <h2 class="phase-title">Review Phase: Consolidation and Mastery</h2>
+                <p class="phase-description">Participate in a rapid-fire interview challenge with timed questions requiring fast recall of vocabulary and phrases.</p>
+                
+                <div class="game-area">
+                    <div class="rapid-fire-container">
+                        <div class="timer-container">
+                            <div class="timer">15</div>
+                        </div>
+                        
+                        <div class="question-display">
+                            What is the correct term for a temporary storage area used during data transfer?
+                        </div>
+                        
+                        <div class="answer-options">
+                            <div class="answer-option">Buffer</div>
+                            <div class="answer-option">Cache</div>
+                            <div class="answer-option">Queue</div>
+                            <div class="answer-option">Stack</div>
+                        </div>
+                        
+                        <div class="score-display">
+                            <div class="score-item">
+                                <div class="score-value">7</div>
+                                <div class="score-label">Correct</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">2</div>
+                                <div class="score-label">Incorrect</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">3</div>
+                                <div class="score-label">Chain</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">85%</div>
+                                <div class="score-label">Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gray-500); font-style: italic; z-index: -1;">
+                        [Game Content Placeholder - Rapid-Fire Interview Challenge]
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 5: Report (New) -->
+            <div class="phase-container" id="report-phase">
+                <h2 class="phase-title">Report Phase: Learning Analytics & Improvement</h2>
+                <p class="phase-description">Review your learning progress with detailed statistics and personalized suggestions for improvement.</p>
+                
+                <div class="report-dashboard">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">Learning Progress Report</div>
+                        <div class="dashboard-date">April 9, 2025</div>
+                    </div>
+                    
+                    <div class="stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-icon concepts">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Concepts Learned</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon vocabulary">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Vocabulary Mastered</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon mistakes">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Common Mistakes</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon time">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">Minutes Practiced</div>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-chart">
+                        <div class="chart-header">
+                            <div class="chart-title">Performance by Category</div>
+                            <div class="chart-filters">
+                                <button class="chart-filter active">All</button>
+                                <button class="chart-filter">Vocabulary</button>
+                                <button class="chart-filter">Dialogue</button>
+                                <button class="chart-filter">Role-Play</button>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-bar" style="height: 70%;">
+                                <div class="chart-bar-value">70%</div>
+                                <div class="chart-bar-label">Basic</div>
+                            </div>
+                            <div class="chart-bar" style="height: 85%;">
+                                <div class="chart-bar-value">85%</div>
+                                <div class="chart-bar-label">Conceptual</div>
+                            </div>
+                            <div class="chart-bar" style="height: 60%;">
+                                <div class="chart-bar-value">60%</div>
+                                <div class="chart-bar-label">Process</div>
+                            </div>
+                            <div class="chart-bar" style="height: 75%;">
+                                <div class="chart-bar-value">75%</div>
+                                <div class="chart-bar-label">Review</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Improvement Suggestions with Specific Interaction Content -->
+                    <div class="improvement-suggestions">
+                        <div class="suggestion-header">
+                            <i class="fas fa-star"></i> Suggestions for Improvement
+                        </div>
+                        
+                        <div class="suggestion-list">
+                            <!-- Pronunciation Suggestion -->
+                            <div class="suggestion-item">
+                                <div class="suggestion-header-row">
+                                    <div class="suggestion-icon">
+                                        <i class="fas fa-volume-up"></i>
+                                    </div>
+                                    <div class="suggestion-title-area">
+                                        <div class="suggestion-title">Technical Vocabulary Pronunciation</div>
+                                        <div class="suggestion-description">Focus on the correct pronunciation of technical terms.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="interaction-example">
+                                    <div class="interaction-title">
+                                        <i class="fas fa-microphone"></i> Your Pronunciation Examples
+                                    </div>
+                                    <div class="interaction-content">
+                                        <div class="pronunciation-item correct">
+                                            <div class="pronunciation-word">"Buffer"</div>
+                                            <div class="pronunciation-status correct">
+                                                <i class="fas fa-check-circle"></i> Correct
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="pronunciation-item incorrect">
+                                            <div class="pronunciation-word">"Cache"</div>
+                                            <div class="pronunciation-status incorrect">
+                                                <i class="fas fa-times-circle"></i> Incorrect
+                                            </div>
+                                        </div>
+                                        <div class="pronunciation-correction">
+                                            You pronounced: "cash" (kæʃ) → Correct: "cash" (kæʃ)
+                                        </div>
+                                        
+                                        <div class="pronunciation-item incorrect">
+                                            <div class="pronunciation-word">"Protocol"</div>
+                                            <div class="pronunciation-status incorrect">
+                                                <i class="fas fa-times-circle"></i> Incorrect
+                                            </div>
+                                        </div>
+                                        <div class="pronunciation-correction">
+                                            You pronounced: "PRO-to-call" (ˈproʊtəkɔl) → Correct: "PRO-tuh-kol" (ˈproʊtəkɒl)
+                                        </div>
+                                        
+                                        <div class="audio-example">
+                                            <i class="fas fa-play-circle"></i>
+                                            <span class="audio-example-text">Listen to correct pronunciations</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="improvement-action">
+                                    <div class="improvement-action-title">Recommended Practice:</div>
+                                    <div class="improvement-action-steps">
+                                        1. Listen to the correct pronunciation examples<br>
+                                        2. Practice saying each term 5 times<br>
+                                        3. Record yourself and compare with the reference audio<br>
+                                        4. Focus especially on "protocol" and "cache" pronunciation
+                                    </div>
+                                    <button class="retry-button">
+                                        <i class="fas fa-redo"></i> Retry Pronunciation
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Sentence Structure Suggestion -->
+                            <div class="suggestion-item">
+                                <div class="suggestion-header-row">
+                                    <div class="suggestion-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div class="suggestion-title-area">
+                                        <div class="suggestion-title">Technical Dialogue Structure</div>
+                                        <div class="suggestion-description">Improve your sentence structure and flow in technical conversations.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sentence-example">
+                                    <div class="sentence-title">
+                                        <i class="fas fa-comment-alt"></i> Your Spoken Sentence Example
+                                    </div>
+                                    <div class="sentence-spoken">
+                                        "The network configuration is not working because I think maybe the router has problem with the IP address that was assigned by the DHCP server."
+                                    </div>
+                                    
+                                    <div class="sentence-feedback">
+                                        <div class="feedback-point">
+                                            <i class="fas fa-check-circle positive"></i>
+                                            <div class="feedback-point-text">
+                                                <strong>Good:</strong> You correctly identified the technical components (router, IP address, DHCP server).
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="feedback-point">
+                                            <i class="fas fa-check-circle positive"></i>
+                                            <div class="feedback-point-text">
+                                                <strong>Good:</strong> You established a logical cause-and-effect relationship.
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="feedback-point">
+                                            <i class="fas fa-times-circle negative"></i>
+                                            <div class="feedback-point-text">
+                                                <strong>Needs Improvement:</strong> Sentence is too long and contains hesitation markers ("I think maybe").
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="feedback-point">
+                                            <i class="fas fa-times-circle negative"></i>
+                                            <div class="feedback-point-text">
+                                                <strong>Needs Improvement:</strong> Grammar error ("has problem" instead of "has a problem").
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="improvement-action">
+                                    <div class="improvement-action-title">Suggested Improvement:</div>
+                                    <div class="improvement-action-steps">
+                                        "The network configuration is not working. The router has a problem with the IP address assigned by the DHCP server."<br><br>
+                                        <strong>Key changes:</strong><br>
+                                        1. Split into two shorter, clearer sentences<br>
+                                        2. Removed hesitation markers<br>
+                                        3. Fixed grammar ("has a problem")<br>
+                                        4. More direct and confident phrasing
+                                    </div>
+                                    <button class="retry-button">
+                                        <i class="fas fa-redo"></i> Practice Sentence Structure
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Role-Play Response Suggestion -->
+                            <div class="suggestion-item">
+                                <div class="suggestion-header-row">
+                                    <div class="suggestion-icon">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <div class="suggestion-title-area">
+                                        <div class="suggestion-title">Role-Play Response Quality</div>
+                                        <div class="suggestion-description">Enhance your responses in technical support role-play scenarios.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="interaction-example">
+                                    <div class="interaction-title">
+                                        <i class="fas fa-headset"></i> Role-Play Interaction
+                                    </div>
+                                    <div class="interaction-content">
+                                        <div style="color: var(--gray-600); margin-bottom: 0.75rem;"><strong>Interviewer:</strong> "What steps would you take to troubleshoot a network connectivity issue?"</div>
+                                        
+                                        <div style="color: var(--gray-800); font-style: italic; margin-bottom: 0.75rem; padding: 1rem; background-color: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border-left: 3px solid var(--primary-light);">
+                                            <strong>Your response:</strong> "First I would check if the computer is connected to the network. Then I would ping the router. If that works, I would check if the internet is working by pinging Google. Maybe restart the router if needed."
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sentence-feedback">
+                                    <div class="feedback-point">
+                                        <i class="fas fa-check-circle positive"></i>
+                                        <div class="feedback-point-text">
+                                            <strong>Good:</strong> You provided a logical troubleshooting sequence.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="feedback-point">
+                                        <i class="fas fa-check-circle positive"></i>
+                                        <div class="feedback-point-text">
+                                            <strong>Good:</strong> You used appropriate technical terms (ping, router).
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="feedback-point">
+                                        <i class="fas fa-times-circle negative"></i>
+                                        <div class="feedback-point-text">
+                                            <strong>Needs Improvement:</strong> Response lacks specific details about each step.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="feedback-point">
+                                        <i class="fas fa-times-circle negative"></i>
+                                        <div class="feedback-point-text">
+                                            <strong>Needs Improvement:</strong> Informal language ("Maybe restart") reduces professional impression.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="improvement-action">
+                                    <div class="improvement-action-title">Enhanced Response Example:</div>
+                                    <div class="improvement-action-steps">
+                                        "First, I would verify the physical connection by checking if the network cable is properly connected or if the Wi-Fi is enabled. Next, I would check the local network connectivity by pinging the default gateway or router IP address. If local connectivity is confirmed, I would test internet connectivity by pinging external servers like 8.8.8.8 or google.com. If these tests fail, I would systematically troubleshoot by restarting the network adapter, then the router, and finally checking for IP configuration issues using ipconfig commands."
+                                    </div>
+                                    <button class="retry-button">
+                                        <i class="fas fa-redo"></i> Practice Role-Play Response
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="continue-button">
+                        <i class="fas fa-arrow-right"></i> Continue to Next Lesson
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Current phase index
+        let currentPhase = 0;
+        
+        // Phase data
+        const phases = [
+            {
+                id: 'basic-phase',
+                name: 'Basic',
+                chatMessages: [
+                    { sender: 'coach', text: 'Hello! I\'m your AI Coach. I\'ll guide you through each phase of the learning process. What would you like to know?' },
+                    { sender: 'user', text: 'Can you explain what "buffer" means in computing?' },
+                    { sender: 'coach', text: 'A buffer is a temporary storage area used when transferring data between different devices or programs. It helps manage data flow when devices operate at different speeds.' }
+                ]
+            },
+            {
+                id: 'conceptual-phase',
+                name: 'Conceptual',
+                chatMessages: [
+                    { sender: 'coach', text: 'Now we\'re in the Conceptual Phase. Let\'s work on building natural conversations by reconstructing dialogues.' },
+                    { sender: 'user', text: 'How do I know the correct order for technical support dialogues?' },
+                    { sender: 'coach', text: 'Technical support dialogues typically follow a pattern: greeting, problem identification, troubleshooting steps, and resolution. Look for logical connections between statements.' }
+                ]
+            },
+            {
+                id: 'process-phase',
+                name: 'Process',
+                chatMessages: [
+                    { sender: 'coach', text: 'Welcome to the Process Phase! Here you\'ll apply what you\'ve learned in a role-play scenario.' },
+                    { sender: 'user', text: 'What should I focus on during the role-play?' },
+                    { sender: 'coach', text: 'Focus on using technical terms correctly, maintaining a professional tone, and providing clear, structured responses to the interviewer\'s questions.' }
+                ]
+            },
+            {
+                id: 'review-phase',
+                name: 'Review',
+                chatMessages: [
+                    { sender: 'coach', text: 'This is the Review Phase - a rapid-fire interview challenge! Respond quickly and accurately to demonstrate your mastery.' },
+                    { sender: 'user', text: 'How much time do I have for each question?' },
+                    { sender: 'coach', text: 'You have 15 seconds per question. Focus on recalling the correct terms quickly rather than providing detailed explanations.' }
+                ]
+            },
+            {
+                id: 'report-phase',
+                name: 'Report',
+                chatMessages: [
+                    { sender: 'coach', text: 'Here\'s your Learning Progress Report! Review your statistics and check out personalized suggestions to improve your skills.' },
+                    { sender: 'user', text: 'What should I focus on improving first?' },
+                    { sender: 'coach', text: 'Based on your performance, I recommend focusing on pronunciation of technical terms first, especially "protocol" and "cache". Then work on your sentence structure in technical conversations.' }
+                ]
+            }
+        ];
+        
+        // DOM elements
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const phaseContainers = document.querySelectorAll('.phase-container');
+        const container = document.querySelector('.container');
+        const chatMessages = document.querySelector('.chat-messages');
+        
+        // Initialize UI
+        updateUI();
+        
+        // Add click events for progress steps (phase navigation)
+        progressSteps.forEach((step, index) => {
+            step.addEventListener('click', function() {
+                currentPhase = index;
+                updateUI();
+            });
+        });
+        
+        // Add click events for interactive elements (for demo purposes)
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Toggle feedback overlay
+                const overlay = this.querySelector('.feedback-overlay');
+                if (overlay) {
+                    overlay.classList.add('show');
+                    setTimeout(() => {
+                        overlay.classList.remove('show');
+                    }, 2000);
+                }
+            });
+        });
+        
+        document.querySelector('.audio-player').addEventListener('click', function() {
+            // Simulate audio playing
+            this.innerHTML = '<i class="fas fa-pause"></i>';
+            
+            // Highlight cards
+            const cards = document.querySelectorAll('.card');
+            cards[0].classList.add('highlight');
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-play"></i>';
+                cards[0].classList.remove('highlight');
+            }, 3000);
+        });
+        
+        // Make dialogue bubbles draggable (for demo purposes)
+        document.querySelectorAll('.dialogue-bubble').forEach(bubble => {
+            bubble.addEventListener('mousedown', function() {
+                this.style.opacity = '0.8';
+            });
+            
+            bubble.addEventListener('mouseup', function() {
+                this.style.opacity = '1';
+            });
+        });
+        
+        // Chat interface functionality
+        document.querySelector('.chat-action-button.send').addEventListener('click', function() {
+            const inputField = document.querySelector('.chat-input');
+            
+            if (inputField.value.trim() !== '') {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.textContent = inputField.value;
+                chatMessages.appendChild(userMessage);
+                
+                // Clear input
+                inputField.value = '';
+                
+                // Simulate coach response after a short delay
+                setTimeout(() => {
+                    const coachMessage = document.createElement('div');
+                    coachMessage.className = 'message coach';
+                    coachMessage.textContent = 'I understand your question. Let me help you with that...';
+                    chatMessages.appendChild(coachMessage);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+        
+        // Recording functionality (demo)
+        document.querySelector('.chat-action-button[title="Record audio"]').addEventListener('click', function() {
+            const recordingIndicator = document.querySelector('.recording-indicator');
+            const isRecording = recordingIndicator.classList.contains('active');
+            
+            if (isRecording) {
+                // Stop recording
+                recordingIndicator.classList.remove('active');
+                
+                // Add attachment preview
+                const attachmentPreview = document.querySelector('.attachment-preview');
+                const newAttachment = document.createElement('div');
+                newAttachment.className = 'attachment-item';
+                newAttachment.innerHTML = '<i class="fas fa-file-audio"></i> recording_' + Math.floor(Math.random() * 1000) + '.mp3';
+                attachmentPreview.appendChild(newAttachment);
+            } else {
+                // Start recording
+                recordingIndicator.classList.add('active');
+                
+                // Reset timer
+                const timer = recordingIndicator.querySelector('.recording-time');
+                timer.textContent = '0:00';
+                
+                // Simulate timer
+                let seconds = 0;
+                const timerInterval = setInterval(() => {
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    timer.textContent = minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+                    
+                    // Auto-stop after 30 seconds
+                    if (seconds >= 30) {
+                        clearInterval(timerInterval);
+                        this.click();
+                    }
+                }, 1000);
+                
+                // Store interval ID to clear it if stopped manually
+                recordingIndicator.dataset.timerInterval = timerInterval;
+            }
+        });
+        
+        // File attachment functionality (demo)
+        document.querySelector('.chat-action-button[title="Attach file"]').addEventListener('click', function() {
+            // Simulate file selection
+            const attachmentPreview = document.querySelector('.attachment-preview');
+            const fileTypes = ['document', 'image', 'pdf', 'audio'];
+            const fileType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
+            const fileIcons = {
+                'document': 'fa-file-word',
+                'image': 'fa-file-image',
+                'pdf': 'fa-file-pdf',
+                'audio': 'fa-file-audio'
+            };
+            
+            const newAttachment = document.createElement('div');
+            newAttachment.className = 'attachment-item';
+            newAttachment.innerHTML = `<i class="fas ${fileIcons[fileType]}"></i> file_${Math.floor(Math.random() * 1000)}.${fileType === 'document' ? 'docx' : fileType === 'image' ? 'jpg' : fileType === 'pdf' ? 'pdf' : 'mp3'}`;
+            attachmentPreview.appendChild(newAttachment);
+        });
+        
+        // Audio example playback (demo)
+        document.querySelector('.audio-example').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const text = this.querySelector('.audio-example-text');
+            
+            if (icon.classList.contains('fa-play-circle')) {
+                icon.classList.remove('fa-play-circle');
+                icon.classList.add('fa-pause-circle');
+                text.textContent = 'Playing...';
+                
+                // Simulate playback ending after 3 seconds
+                setTimeout(() => {
+                    icon.classList.remove('fa-pause-circle');
+                    icon.classList.add('fa-play-circle');
+                    text.textContent = 'Listen to correct pronunciations';
+                }, 3000);
+            } else {
+                icon.classList.remove('fa-pause-circle');
+                icon.classList.add('fa-play-circle');
+                text.textContent = 'Listen to correct pronunciations';
+            }
+        });
+        
+        // Chart filters functionality
+        document.querySelectorAll('.chart-filter').forEach(filter => {
+            filter.addEventListener('click', function() {
+                // Remove active class from all filters
+                document.querySelectorAll('.chart-filter').forEach(f => f.classList.remove('active'));
+                
+                // Add active class to clicked filter
+                this.classList.add('active');
+                
+                // Simulate chart data change
+                const chartBars = document.querySelectorAll('.chart-bar');
+                chartBars.forEach(bar => {
+                    const randomHeight = Math.floor(Math.random() * 50) + 40; // Random height between 40% and 90%
+                    bar.style.height = randomHeight + '%';
+                    bar.querySelector('.chart-bar-value').textContent = randomHeight + '%';
+                });
+            });
+        });
+        
+        // Retry buttons functionality
+        document.querySelectorAll('.retry-button').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Starting practice session for this skill...');
+            });
+        });
+        
+        // Continue button functionality
+        document.querySelector('.continue-button').addEventListener('click', function() {
+            alert('Moving to the next lesson...');
+        });
+        
+        // Update UI based on current phase
+        function updateUI() {
+            // Update progress indicator
+            progressSteps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index === currentPhase) {
+                    step.classList.add('active');
+                } else if (index < currentPhase) {
+                    step.classList.add('completed');
+                }
+            });
+            
+            // Show current phase container, hide others
+            phaseContainers.forEach((container, index) => {
+                container.classList.remove('active');
+                if (index === currentPhase) {
+                    container.classList.add('active');
+                }
+            });
+            
+            // Update chat messages
+            updateChatMessages();
+        }
+        
+        // Update chat messages based on current phase
+        function updateChatMessages() {
+            // Clear existing messages
+            chatMessages.innerHTML = '';
+            
+            // Add phase-specific messages
+            const phaseMessages = phases[currentPhase].chatMessages;
+            phaseMessages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender}`;
+                messageDiv.textContent = msg.text;
+                chatMessages.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
