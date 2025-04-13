@@ -32,6 +32,11 @@ type TimeRange = 'daily' | 'monthly' | 'yearly';
 
 const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('daily');
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date);
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -61,7 +66,7 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
   const getExperienceData = (range: TimeRange) => {
     const dates = [];
     const experiences = [];
-    const today = new Date();
+    const today = selectedDate;
     today.setHours(0, 0, 0, 0);
 
     switch (range) {
@@ -239,31 +244,39 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Kinh Nghiệm Theo Thời Gian</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setTimeRange('daily')}
-              className={`px-3 py-1 rounded ${
-                timeRange === 'daily' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Ngày
-            </button>
-            <button
-              onClick={() => setTimeRange('monthly')}
-              className={`px-3 py-1 rounded ${
-                timeRange === 'monthly' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Tháng
-            </button>
-            <button
-              onClick={() => setTimeRange('yearly')}
-              className={`px-3 py-1 rounded ${
-                timeRange === 'yearly' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Năm
-            </button>
+          <div className="flex items-center space-x-4">
+            <input
+              type="date"
+              value={selectedDate.toISOString().split('T')[0]}
+              onChange={(e) => handleDateChange(new Date(e.target.value))}
+              className="px-3 py-1 border rounded"
+            />
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setTimeRange('daily')}
+                className={`px-3 py-1 rounded ${
+                  timeRange === 'daily' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Ngày
+              </button>
+              <button
+                onClick={() => setTimeRange('monthly')}
+                className={`px-3 py-1 rounded ${
+                  timeRange === 'monthly' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Tháng
+              </button>
+              <button
+                onClick={() => setTimeRange('yearly')}
+                className={`px-3 py-1 rounded ${
+                  timeRange === 'yearly' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Năm
+              </button>
+            </div>
           </div>
         </div>
         <div className="chart-container" style={{ height: '300px' }}>
