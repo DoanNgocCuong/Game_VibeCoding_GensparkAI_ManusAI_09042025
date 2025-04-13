@@ -87,6 +87,13 @@ const tagSlice = createSlice({
         state.tags[name] = { ...state.tags[name], ...changes };
       }
     },
+    removeTag: (state, action: PayloadAction<string>) => {
+      const tagName = action.payload;
+      if (state.tags[tagName]) {
+        delete state.tags[tagName];
+        localStorage.setItem('tags', JSON.stringify(state.tags));
+      }
+    },
   },
 });
 
@@ -107,7 +114,8 @@ const calculateLevel = (xp: number): number => {
 export const { 
   addTagXP, 
   removeTagXP, 
-  updateTag 
+  updateTag,
+  removeTag
 } = tagSlice.actions;
 
 export default tagSlice.reducer; 

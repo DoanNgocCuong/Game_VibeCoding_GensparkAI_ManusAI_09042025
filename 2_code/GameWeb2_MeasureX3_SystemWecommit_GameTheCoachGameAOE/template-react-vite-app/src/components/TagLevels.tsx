@@ -1,7 +1,7 @@
 import { Tag } from '../store/slices/tagSlice';
 import { calculateXPProgress, calculateStreakMultiplier, calculateMilestoneBonus } from '../utils/xpCalculator';
 import { useDispatch } from 'react-redux';
-import { updateTag } from '../store/slices/tagSlice';
+import { updateTag, removeTag } from '../store/slices/tagSlice';
 import { useState } from 'react';
 
 interface TagLevelsProps {
@@ -11,6 +11,7 @@ interface TagLevelsProps {
 const TagLevels = ({ tags }: TagLevelsProps) => {
   const dispatch = useDispatch();
   const [editingTag, setEditingTag] = useState<string | null>(null);
+  const [tagToDelete, setTagToDelete] = useState<string | null>(null);
 
   const handleColorChange = (tagName: string, color: string) => {
     dispatch(updateTag({ 
@@ -18,6 +19,11 @@ const TagLevels = ({ tags }: TagLevelsProps) => {
       changes: { color } 
     }));
     setEditingTag(null);
+  };
+
+  const handleDeleteTag = (tagName: string) => {
+    dispatch(removeTag(tagName));
+    setTagToDelete(null);
   };
 
   const sortedTags = Object.keys(tags).sort((a, b) => {
@@ -76,6 +82,14 @@ const TagLevels = ({ tags }: TagLevelsProps) => {
                     >
                       {tagName}
                     </span>
+                    <button
+                      onClick={() => setTagToDelete(tagName)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </button>
                     {editingTag === tagName && (
                       <div className="absolute z-10 mt-8 bg-white p-2 rounded shadow-lg">
                         <div className="grid grid-cols-4 gap-1">
@@ -132,6 +146,32 @@ const TagLevels = ({ tags }: TagLevelsProps) => {
           })
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {tagToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Xác nhận xóa tag</h3>
+            <p className="text-gray-600 mb-6">
+              Bạn có chắc chắn muốn xóa tag "{tagToDelete}"? Hành động này không thể hoàn tác.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setTagToDelete(null)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => handleDeleteTag(tagToDelete)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+              >
+                Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
