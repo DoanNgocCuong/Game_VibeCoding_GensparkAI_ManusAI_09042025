@@ -32,10 +32,14 @@ type TimeRange = 'daily' | 'monthly' | 'yearly';
 
 const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('daily');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
 
   const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    setSelectedDate(newDate);
   };
 
   const formatCurrency = (value: number) => {
@@ -129,9 +133,9 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
 
   // Prepare tag distribution data based on time range
   const getTagDistributionData = (range: TimeRange) => {
-    const today = new Date();
+    const today = selectedDate;
     today.setHours(0, 0, 0, 0);
-    let startDate = new Date(today);
+    const startDate = new Date(today);
 
     switch (range) {
       case 'daily':
@@ -145,11 +149,23 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
         break;
     }
 
+    console.log('Selected Date Range:', { startDate, endDate: today });
+
+    // Initialize tagValues with all available tags
     const tagValues: Record<string, number> = {};
+    Object.keys(tags).forEach(tag => {
+      tagValues[tag] = tags[tag].xp || 0;
+    });
+
+    console.log('Initial Tag Values:', tagValues);
+
+    // Add values from filtered tasks
     const filteredTasks = tasks.filter(task => {
       const taskDate = new Date(task.date);
       return taskDate >= startDate && taskDate <= today;
     });
+
+    console.log('Filtered Tasks:', filteredTasks);
 
     filteredTasks.forEach(task => {
       task.tags.forEach(tag => {
@@ -160,11 +176,24 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
       });
     });
 
-    return {
-      labels: Object.keys(tagValues),
-      data: Object.values(tagValues),
-      colors: Object.keys(tagValues).map(tag => tags[tag] ? tags[tag].color : '#CBD5E0')
+    console.log('Final Tag Values:', tagValues);
+
+    const tagLabels = Object.keys(tagValues).filter(tag => tagValues[tag] > 0);
+    const data = {
+      labels: tagLabels,
+      data: tagLabels.map(tag => tagValues[tag]),
+      colors: tagLabels.map((tag) => {
+        // Lấy màu từ thuộc tính color của tag trong store
+        const baseColor = tags[tag]?.color || '#6B7280'; // Màu xám mặc định nếu không có màu
+        return {
+          backgroundColor: `${baseColor}CC`,
+          borderColor: baseColor,
+        };
+      }),
     };
+
+    console.log('Pie Chart Data:', data);
+    return data;
   };
 
   const { dates, experiences } = getExperienceData(timeRange);
@@ -188,9 +217,9 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
     datasets: [
       {
         data: tagData.data,
-        backgroundColor: tagData.colors.map(color => `${color}CC`),
-        borderColor: tagData.colors,
-        borderWidth: 1,
+        backgroundColor: tagData.colors.map(color => color.backgroundColor),
+        borderColor: tagData.colors.map(color => color.borderColor),
+        borderWidth: 2,
       },
     ],
   };
@@ -235,6 +264,10 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
             return `${label}: ${formatCurrency(value)} (${percentage}%)`;
           },
         },
+      },
+      legend: {
+        display: true,
+        position: 'bottom' as const,
       },
     },
   };

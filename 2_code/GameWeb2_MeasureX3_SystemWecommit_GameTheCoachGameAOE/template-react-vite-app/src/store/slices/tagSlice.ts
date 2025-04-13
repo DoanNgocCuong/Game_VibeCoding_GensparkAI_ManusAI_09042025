@@ -13,19 +13,19 @@ interface TagState {
   tags: Record<string, Tag>;
 }
 
-const getRandomColor = () => {
-  const colors = [
-    '#F56565', // red
-    '#ED8936', // orange
-    '#ECC94B', // yellow
-    '#48BB78', // green
-    '#38B2AC', // teal
-    '#4299E1', // blue
-    '#667EEA', // indigo
-    '#9F7AEA', // purple
-    '#ED64A6', // pink
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+const getTagColor = (tagName: string) => {
+  const colorPalette: Record<string, string> = {
+    'Công việc': '#4F46E5', // Indigo
+    'Học tập': '#10B981', // Emerald
+    'Sức khỏe': '#F59E0B', // Amber
+    'Gia đình': '#EC4899', // Pink
+    'Giải trí': '#3B82F6', // Blue
+    'Tài chính': '#8B5CF6', // Violet
+    'Mối quan hệ': '#EF4444', // Red
+    'Phát triển bản thân': '#14B8A6', // Teal
+    'default': '#6B7280' // Gray
+  };
+  return colorPalette[tagName] || colorPalette.default;
 };
 
 const initialState: TagState = {
@@ -42,7 +42,7 @@ const tagSlice = createSlice({
         state.tags[tagName] = {
           xp: 0,
           level: 0,
-          color: getRandomColor(),
+          color: getTagColor(tagName),
           taskCount: 0,
           streakDays: 0,
           lastTaskDate: date,
