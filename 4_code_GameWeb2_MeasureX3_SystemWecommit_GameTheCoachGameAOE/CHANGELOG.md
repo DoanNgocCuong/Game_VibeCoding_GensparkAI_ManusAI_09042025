@@ -72,3 +72,16 @@ src/
 ├── main.tsx        # Entry point của ứng dụng
 └── index.css       # Global styles
 ```
+
+# v1.1 
+13/04/2025
+
+```bash
+git tag -a v1.1_MeasureSystemApp -m "
+>> 1. Fix toàn bộ các lỗi để npm run dev sang npm run build   
+>> 2. Fix lỗi npm run build để deploy Vercel
+>> 3. Check localStorage hoạt động như nào: 
+>> - Lưu trữ dữ liệu trên TRÌNH DUYỆT USER, ko lưu trên server của Vercel
+>> - Có giới hạn dung lượng (thường khoảng 5-10MB tùy trình duyệt)
+>> - Khi tắt laptop: Dữ liệu VẪN ĐƯỢC GIỮ LẠI khi khởi động lại. Miễn là không xóa cache trình duyệt"
+```
