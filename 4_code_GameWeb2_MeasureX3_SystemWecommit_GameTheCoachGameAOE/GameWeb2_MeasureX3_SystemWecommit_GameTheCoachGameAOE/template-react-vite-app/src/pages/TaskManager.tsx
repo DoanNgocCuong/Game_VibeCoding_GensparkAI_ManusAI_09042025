@@ -22,7 +22,7 @@ const TaskManager = () => {
       dispatch(addTagXP({ 
         tagName: tag, 
         value: taskData.value,
-        date: new Date().toISOString()
+        date: taskData.date
       }));
     });
     showNotification('Task đã được thêm thành công', 'success');
