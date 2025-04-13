@@ -1,3 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .progress-bar {
+    @apply h-2.5 bg-gray-200 rounded overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply h-full rounded transition-all duration-300;
+  }
+  
+  .tag-pill {
+    @apply rounded-full px-2.5 py-1 text-xs inline-flex items-center;
+  }
+
+  .task-animation {
+    animation: fadeIn 0.5s;
+  }
+
+  .level-up-animation {
+    animation: pulse 1s;
+  }
+
+  .notification-animation {
+    animation: slideIn 0.3s;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(88, 80, 236, 0.7);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
