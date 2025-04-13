@@ -801,31 +801,106 @@
             // Add options from existing tags
             const tagNames = Object.keys(tags);
             
+            // Add all tags to datalist
             tagNames.forEach(tagName => {
                 const option = document.createElement('option');
                 option.value = tagName;
                 datalist.appendChild(option);
             });
             
-            // Add popular tags buttons
-            const popularTags = tagNames
-                .sort((a, b) => (tags[b].taskCount || 0) - (tags[a].taskCount || 0))
-                .slice(0, 5);
+            // Sort tags by frequency and XP
+            const sortedTags = tagNames.sort((a, b) => {
+                // First sort by task count
+                const countDiff = (tags[b].taskCount || 0) - (tags[a].taskCount || 0);
+                if (countDiff !== 0) return countDiff;
+                
+                // Then sort by XP
+                return tags[b].xp - tags[a].xp;
+            });
             
-            popularTags.forEach(tagName => {
+            // Add recommended tags section
+            const recommendedSection = document.createElement('div');
+            recommendedSection.className = 'mb-2';
+            recommendedSection.innerHTML = '<h4 class="text-sm font-medium text-gray-700 mb-1">Tags đề xuất:</h4>';
+            popularTagsContainer.appendChild(recommendedSection);
+            
+            // Add recommended tags
+            const recommendedTags = sortedTags.slice(0, 5);
+            recommendedTags.forEach(tagName => {
                 const tagButton = document.createElement('button');
                 tagButton.type = 'button';
-                tagButton.className = 'tag-pill text-xs';
+                tagButton.className = 'tag-pill text-xs hover:opacity-80 transition-opacity';
                 tagButton.style.backgroundColor = tags[tagName].color + '33';
                 tagButton.style.color = tags[tagName].color;
-                tagButton.textContent = tagName;
+                tagButton.innerHTML = `
+                    ${tagName}
+                    <span class="ml-1 text-xs opacity-70">(${tags[tagName].taskCount || 0})</span>
+                `;
                 
                 tagButton.addEventListener('click', function() {
-                    document.getElementById('taskTag').value = tagName;
+                    addTagToSelection(tagName);
                 });
                 
                 popularTagsContainer.appendChild(tagButton);
             });
+            
+            // Add recent tags section if there are more than 5 tags
+            if (sortedTags.length > 5) {
+                const recentSection = document.createElement('div');
+                recentSection.className = 'mt-2';
+                recentSection.innerHTML = '<h4 class="text-sm font-medium text-gray-700 mb-1">Tags gần đây:</h4>';
+                popularTagsContainer.appendChild(recentSection);
+                
+                // Add recent tags (excluding the top 5)
+                const recentTags = sortedTags.slice(5, 10);
+                recentTags.forEach(tagName => {
+                    const tagButton = document.createElement('button');
+                    tagButton.type = 'button';
+                    tagButton.className = 'tag-pill text-xs hover:opacity-80 transition-opacity';
+                    tagButton.style.backgroundColor = tags[tagName].color + '33';
+                    tagButton.style.color = tags[tagName].color;
+                    tagButton.innerHTML = `
+                        ${tagName}
+                        <span class="ml-1 text-xs opacity-70">(${tags[tagName].taskCount || 0})</span>
+                    `;
+                    
+                    tagButton.addEventListener('click', function() {
+                        addTagToSelection(tagName);
+                    });
+                    
+                    popularTagsContainer.appendChild(tagButton);
+                });
+            }
+        }
+
+        function addTagToSelection(tagName) {
+            const selectedTagsContainer = document.getElementById('selectedTags');
+            
+            // Check if tag already exists
+            if (Array.from(selectedTagsContainer.children).some(tag => tag.textContent.trim() === tagName)) {
+                showNotification('Tag đã được thêm', 'info');
+                return;
+            }
+
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag-pill inline-flex items-center';
+            tagElement.style.backgroundColor = tags[tagName] ? tags[tagName].color + '33' : '#CBD5E033';
+            tagElement.style.color = tags[tagName] ? tags[tagName].color : '#718096';
+            
+            tagElement.innerHTML = `
+                ${tagName}
+                <button type="button" class="ml-1 text-xs hover:text-red-500" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            selectedTagsContainer.appendChild(tagElement);
+            
+            // Clear input field
+            document.getElementById('taskTag').value = '';
+            
+            // Show success notification
+            showNotification(`Đã thêm tag "${tagName}"`, 'success');
         }
 
         function navigateDate(days) {
@@ -941,30 +1016,6 @@
             ];
             
             return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        function addTagToSelection(tagName) {
-            const selectedTagsContainer = document.getElementById('selectedTags');
-            
-            // Check if tag already exists
-            if (Array.from(selectedTagsContainer.children).some(tag => tag.textContent.trim() === tagName)) {
-                showNotification('Tag đã được thêm', 'info');
-                return;
-            }
-
-            const tagElement = document.createElement('span');
-            tagElement.className = 'tag-pill inline-flex items-center';
-            tagElement.style.backgroundColor = tags[tagName] ? tags[tagName].color + '33' : '#CBD5E033';
-            tagElement.style.color = tags[tagName] ? tags[tagName].color : '#718096';
-            
-            tagElement.innerHTML = `
-                ${tagName}
-                <button type="button" class="ml-1 text-xs hover:text-red-500" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            selectedTagsContainer.appendChild(tagElement);
         }
     </script>
 </body>
