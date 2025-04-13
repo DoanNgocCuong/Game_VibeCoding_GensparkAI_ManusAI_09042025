@@ -88,24 +88,26 @@ git tag -a v1.1_MeasureSystemApp -m "
 
 post bài: 
 ```bash
-(xin phép sếp Huy và các sếp ạ).
-Em mới lên idea Design 1 con App theo dõi, tạm gọi là MEASUREMENT SYSTEM APP (MEASUREMENT AND NETWORKING SYSTEM) - có khả năng mang lại nhiều lợi lạc cho ace cả nhóm.
+[GÓC TÌM ĐỒNG ĐỘI CODE CHUNG 1 CON APP - MEASUREMENT SYSTEM WECOMMIT100X APP]
+
+(xin phép sếp Huy và các sếp ạ). 
+Em mới lên idea Design 1 con App theo dõi Quản lý task, tạm gọi là MEASUREMENT SYSTEM APP (MEASUREMENT AND NETWORKING SYSTEM) - có khả năng mang lại nhiều lợi lạc cho ace cả nhóm. 
 
 Hiện em xài cho bản thân trước. Em đăng bài muốn tìm những ae để Dev cùng. Vì em dev được đến đoạn lưu data vào localStorage là đứng. Cảm ơn cả nhà và mời mn đọc tiếp phần bên dưới ạ!
 (Web ko phải mảng em chuyên)
 
 ----
-App được lên idea thiết kế dựa trên nhiều mindset top1% được sếp Trần Quốc Huy chỉ dạy.
+App được lên idea thiết kế dựa trên nhiều mindset top1% được sếp Trần Quốc Huy chỉ dạy. 
 
-1. ĐO LƯỜNG MỌI VIỆC 1X-10X-100X, KO ĐO LƯỜNG KO THỂ CẢI TIẾN.
-- Nhìn vào đây ta sẽ thấy được 1 ngày mình đang đầu tư vào đâu, 1 tháng, 1 năm.
+1. ĐO LƯỜNG MỌI VIỆC 1X-10X-100X, KO ĐO LƯỜNG KO THỂ CẢI TIẾN.   
+- Nhìn vào đây ta sẽ thấy được 1 ngày mình đang đầu tư vào đâu, 1 tháng, 1 năm. 
 
-2. LÀM THEO SYSTEM làm mọi việc để phát triển SYSTEM. Làm ĐIỀU ĐÚNG ĐẮN, LIÊN TỤC, TUẦN TỰ, NHẤT QUÁN, KHÔNG DỪNG LẠI. Và ĐỂ THỜI GIAN TRẢ LỜI.
+2. LÀM THEO SYSTEM làm mọi việc để phát triển SYSTEM. Làm ĐIỀU ĐÚNG ĐẮN, LIÊN TỤC, TUẦN TỰ, NHẤT QUÁN, KHÔNG DỪNG LẠI. Và ĐỂ THỜI GIAN TRẢ LỜI. 
 
-3. LÃI KÉP VÀ LEVEL + GAME HOÁ
-- Kinh nghiệm thu thập được quy đổi 1X = 1 EXP.
+3. LÃI KÉP VÀ LEVEL + GAME HOÁ 
+- Kinh nghiệm thu thập được quy đổi 1X = 1 EXP. 
 Level 1: 1000 EXP, các level sau mỗi level *1.5 (Level 2 cần 1500 EXP cứ thế, ...
-- Streak multipliers for LÃI KÉP, 5-10 năm đầu mọi thứ sẽ rất chậm, càng về sau mọi thứ sẽ càng đi theo đường thẳng chéo Lãi kép
+- Streak multipliers for LÃI KÉP, 5-10 năm đầu mọi thứ sẽ rất chậm, càng về sau mọi thứ sẽ càng đi theo đường thẳng chéo Lãi kép 
 
 0-30 days: 1.0x
 31-90 days: 1.05x
@@ -117,21 +119,24 @@ Level 1: 1000 EXP, các level sau mỗi level *1.5 (Level 2 cần 1500 EXP cứ 
 10-15 years: 2.5x
 15+ years: 5.0x
 
-Chỉ với 3 mục bên trên em nghĩ đã đủ cho team mình xài rùi ạ.
+Chỉ với 3 mục bên trên em nghĩ đã đủ cho team mình xài rùi ạ. 
 
 ====
 
-Hướng mở rộng ra WECOMMIT SYSTEM SOCIAL APP :
-1. Phát triển thành 1 MẠNG XÃ HỘI WECOMMIT100X NỘI BỘ THEO DÕI TOÀN BỘ CHỈ SỐ.
-- Giống như strava đo theo km => Toàn bộ mọi thứ của mỗi thành viên được quy hết RA SỐ => ĐO LƯỜNG ĐƯỢC => CẢI TIẾN ĐƯỢC. ACE NHÌN THẤY SỐ CỦA NHAU,
-2. BỔ SUNG THÊM ĐIỂM B: BEGIN WITH THE END IN MIND, THE ONE THING, để nhìn thấy được bản thân đang ở đâu trên hành trình. 1 mục tiêu lớn được chẻ nhỏ và đo lường hàng ngày.
-3. GAME HOÁ MẠNH HƠN ĐỂ ĐI BÁN GAME: Xuất phát từ lời dạy của sếp Trần Quốc Huy thời điểm tiền ít, hãy dùng tiền đầu tư => giống như trong Game.
+Hướng mở rộng ra WECOMMIT SYSTEM SOCIAL APP : 
+1. Phát triển thành 1 MẠNG XÃ HỘI WECOMMIT100X NỘI BỘ THEO DÕI TOÀN BỘ CHỈ SỐ. 
+-  Giống như strava đo theo km => Toàn bộ mọi thứ của mỗi thành viên được quy hết RA SỐ => ĐO LƯỜNG ĐƯỢC => CẢI TIẾN ĐƯỢC. ACE NHÌN THẤY SỐ CỦA NHAU, 
+2. BỔ SUNG THÊM ĐIỂM B: BEGIN WITH THE END IN MIND, THE ONE THING, để nhìn thấy được bản thân đang ở đâu trên hành trình. 1 mục tiêu lớn được chẻ nhỏ và đo lường hàng ngày. 
+3. GAME HOÁ MẠNH HƠN ĐỂ ĐI BÁN GAME: Xuất phát từ lời dạy của sếp Trần Quốc Huy thời điểm tiền ít, hãy dùng tiền đầu tư => giống như trong Game. 
 App về sau có thể được Game hoá mạnh hơn với idea game ĐẾ CHẾ AOE, ace sẽ xây ĐẾ CHẾ của riêng mình. (tích tiền, tích kinh nghiệm, xây nhà, LÀM OUTSOURCING, ĐÓNG GÓI SẢN PHẨM ĐI BÁN, TUYỂN THÊN NHÂN SỰ, ...
 (giải trí chút thì xây đội ngũ đi chinh chiến và bảo vệ thành trì)
 
 =======
-Hiện app đã có thể xài basic với việc lưu dữ liệu ở localStorage.
-(Em ko chuyên Web nên chưa thể triển khai connect với Database, nếu idea App oke, rất mong các sếp cùng chung tay level up cho app ạ).
+Hiện app đã có thể xài basic với việc lưu dữ liệu ở localStorage. 
+(Em ko chuyên Web nên chưa thể triển khai connect với Database, nếu idea App oke, rất mong các sếp cùng chung tay level up cho app ạ). 
 
 Link xài thử nội bộ các sếp ạ: https://game-vibe-coding-genspark-ai-manus-ai-09042025-qeif.vercel.app/
+
 ```
+
+- Bật check analysis trên vercel
