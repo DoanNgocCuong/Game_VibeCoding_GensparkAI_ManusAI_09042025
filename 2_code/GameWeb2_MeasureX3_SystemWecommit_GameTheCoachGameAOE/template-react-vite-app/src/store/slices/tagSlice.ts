@@ -81,6 +81,12 @@ const tagSlice = createSlice({
         localStorage.setItem('tags', JSON.stringify(state.tags));
       }
     },
+    updateTag: (state, action: PayloadAction<{ name: string; changes: Partial<Tag> }>) => {
+      const { name, changes } = action.payload;
+      if (state.tags[name]) {
+        state.tags[name] = { ...state.tags[name], ...changes };
+      }
+    },
   },
 });
 
@@ -98,5 +104,10 @@ const calculateLevel = (xp: number): number => {
   return level;
 };
 
-export const { addTagXP, removeTagXP } = tagSlice.actions;
+export const { 
+  addTagXP, 
+  removeTagXP, 
+  updateTag 
+} = tagSlice.actions;
+
 export default tagSlice.reducer; 

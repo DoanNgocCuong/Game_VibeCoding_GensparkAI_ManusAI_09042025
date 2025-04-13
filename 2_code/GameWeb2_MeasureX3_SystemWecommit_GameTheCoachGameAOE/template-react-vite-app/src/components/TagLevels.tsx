@@ -1,11 +1,25 @@
 import { Tag } from '../store/slices/tagSlice';
 import { calculateXPProgress, calculateStreakMultiplier, calculateMilestoneBonus } from '../utils/xpCalculator';
+import { useDispatch } from 'react-redux';
+import { updateTag } from '../store/slices/tagSlice';
+import { useState } from 'react';
 
 interface TagLevelsProps {
   tags: Record<string, Tag>;
 }
 
 const TagLevels = ({ tags }: TagLevelsProps) => {
+  const dispatch = useDispatch();
+  const [editingTag, setEditingTag] = useState<string | null>(null);
+
+  const handleColorChange = (tagName: string, color: string) => {
+    dispatch(updateTag({ 
+      name: tagName, 
+      changes: { color } 
+    }));
+    setEditingTag(null);
+  };
+
   const sortedTags = Object.keys(tags).sort((a, b) => {
     if (tags[b].level !== tags[a].level) {
       return tags[b].level - tags[a].level;
@@ -51,15 +65,38 @@ const TagLevels = ({ tags }: TagLevelsProps) => {
             return (
               <div key={tagName} className="bg-gray-50 p-4 rounded-lg border">
                 <div className="flex justify-between items-center">
-                  <span
-                    className="tag-pill"
-                    style={{
-                      backgroundColor: `${tag.color}33`,
-                      color: tag.color,
-                    }}
-                  >
-                    {tagName}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="tag-pill cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{
+                        backgroundColor: `${tag.color}33`,
+                        color: tag.color,
+                      }}
+                      onClick={() => setEditingTag(editingTag === tagName ? null : tagName)}
+                    >
+                      {tagName}
+                    </span>
+                    {editingTag === tagName && (
+                      <div className="absolute z-10 mt-8 bg-white p-2 rounded shadow-lg">
+                        <div className="grid grid-cols-4 gap-1">
+                          {['#4F46E5', '#059669', '#DC2626', '#6B7280', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'].map((color) => (
+                            <button
+                              key={color}
+                              className="w-6 h-6 rounded-full border-2 border-gray-200 hover:border-gray-400 transition-colors"
+                              style={{ backgroundColor: color }}
+                              onClick={() => handleColorChange(tagName, color)}
+                            />
+                          ))}
+                        </div>
+                        <input
+                          type="color"
+                          value={tag.color}
+                          onChange={(e) => handleColorChange(tagName, e.target.value)}
+                          className="mt-2 w-full h-8 rounded border border-gray-300"
+                        />
+                      </div>
+                    )}
+                  </div>
                   <span className="text-indigo-700 font-bold">Level {progress.level}</span>
                 </div>
                 <div className="mt-2">
