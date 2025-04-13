@@ -233,21 +233,21 @@ const ExperienceAnalytics = ({ tasks, tags }: ExperienceAnalyticsProps) => {
         beginAtZero: true,
         grace: '5%',
         ticks: {
-          callback: function(value: number): string {
-            return formatCurrency(value);
-          },
-        },
-      },
+          callback: function(this: any, tickValue: string | number) {
+            return `${tickValue} XP`;
+          }
+        }
+      }
     },
     plugins: {
       tooltip: {
         callbacks: {
-          label: function(context: { raw: number }): string {
-            return formatCurrency(context.raw);
-          },
-        },
-      },
-    },
+          label: function(this: any, tooltipItem: any) {
+            return `${tooltipItem.raw} XP`;
+          }
+        }
+      }
+    }
   };
 
   const pieOptions = {

@@ -19,7 +19,11 @@ const TaskManager = () => {
   const handleAddTask = (taskData: { name: string; tags: string[]; value: number; date: string }) => {
     dispatch(addTask(taskData));
     taskData.tags.forEach(tag => {
-      dispatch(addTagXP({ tagName: tag, value: taskData.value }));
+      dispatch(addTagXP({ 
+        tagName: tag, 
+        value: taskData.value,
+        date: new Date().toISOString()
+      }));
     });
     showNotification('Task đã được thêm thành công', 'success');
   };

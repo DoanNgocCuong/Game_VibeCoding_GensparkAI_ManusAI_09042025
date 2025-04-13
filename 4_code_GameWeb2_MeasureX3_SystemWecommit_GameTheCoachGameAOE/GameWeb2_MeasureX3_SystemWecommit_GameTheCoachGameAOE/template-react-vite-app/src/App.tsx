@@ -1,7 +1,6 @@
 import { Provider } from 'react-redux';
 import { store } from './store';
 import TaskManager from './pages/TaskManager';
-import ExperienceOverview from './components/ExperienceOverview';
 import './App.css';
 
 function App() {

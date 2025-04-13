@@ -30,12 +30,12 @@ const STREAK_MULTIPLIERS = {
 };
 
 // Special milestone bonuses
-const MILESTONE_BONUSES = {
-  '1': 10000,
-  '3': 50000,
-  '5': 100000,
-  '10': 500000,
-  '15': 1000000
+const MILESTONE_BONUSES: Record<string, number> = {
+  '1': 100,
+  '3': 300,
+  '5': 500,
+  '10': 1000,
+  '15': 1500
 };
 
 // XP deduction rates based on streak duration
@@ -88,12 +88,8 @@ export const calculateXPProgress = (baseXP: number, streakDays: number = 0): XPP
 };
 
 export const calculateMilestoneBonus = (years: number): number => {
-  const yearKey = Object.keys(MILESTONE_BONUSES)
-    .map(Number)
-    .filter(y => y <= years)
-    .sort((a, b) => b - a)[0];
-    
-  return yearKey ? MILESTONE_BONUSES[yearKey.toString()] : 0;
+  const yearKey = Math.floor(years).toString();
+  return MILESTONE_BONUSES[yearKey] || 0;
 };
 
 export const calculateXPDeduction = (totalXP: number, streakDays: number, consecutiveMissedDays: number = 1): number => {
