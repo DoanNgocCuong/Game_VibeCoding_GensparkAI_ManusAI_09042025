@@ -8,6 +8,16 @@ Dựa trên thông tin bạn cung cấp, tôi đề xuất một hệ thống t�
   - 1 điểm giá trị = 1 XP cơ bản
   - Ví dụ: Task 1000 điểm = 1000 XP cơ bản
 
+- Công Thức Tính Level
+
+  - Level 1: Cần 1000 XP
+  - Level 2: Cần 1500 XP (100 * 1.5)
+  - Level 3: Cần 2250 XP (150 * 1.5)
+  - Level 4: Cần 3380 XP (225 * 1.5)
+  - Level 5: Cần 5070 XP (338 * 1.5)
+  - Và cứ tiếp tục như vậy...
+
+
 ## 2. Hệ Số Nhân Lãi Kép Theo Thời Gian
 
 ### Hệ Số Streak (Chuỗi Ngày Liên Tục)
@@ -299,11 +309,3 @@ Nếu áp dụng vào thực tế, hệ thống này sẽ tạo động lực m�
 
 ====
 
-## 2. Công Thức Tính Level
-
-- Level 1: Cần 100 XP
-- Level 2: Cần 150 XP (100 * 1.5)
-- Level 3: Cần 225 XP (150 * 1.5)
-- Level 4: Cần 338 XP (225 * 1.5)
-- Level 5: Cần 507 XP (338 * 1.5)
-- Và cứ tiếp tục như vậy...

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { calculateStreakMultiplier } from '../utils/xpCalculator';
 
 interface TaskFormProps {
   onSubmit: (data: { name: string; tags: string[]; value: number; date: string }) => void;
@@ -23,10 +24,16 @@ const TaskForm = ({ onSubmit }: TaskFormProps) => {
       return;
     }
 
+    const value = parseInt(taskValue);
+    if (value < -1000 || value > 1000) {
+      alert('Giá trị task phải nằm trong khoảng -1000 đến 1000');
+      return;
+    }
+
     onSubmit({
       name: taskName,
       tags: selectedTags,
-      value: parseInt(taskValue),
+      value: value,
       date: taskDate,
     });
 
@@ -60,6 +67,10 @@ const TaskForm = ({ onSubmit }: TaskFormProps) => {
   const sortedTags = Object.keys(tags).sort((a, b) => {
     const countDiff = (tags[b].taskCount || 0) - (tags[a].taskCount || 0);
     if (countDiff !== 0) return countDiff;
+    
+    const streakDiff = (tags[b].streakDays || 0) - (tags[a].streakDays || 0);
+    if (streakDiff !== 0) return streakDiff;
+    
     return tags[b].xp - tags[a].xp;
   });
 
@@ -131,25 +142,30 @@ const TaskForm = ({ onSubmit }: TaskFormProps) => {
             ))}
           </datalist>
           <div className="mt-2 flex flex-wrap gap-2">
-            {sortedTags.slice(0, 5).map(tag => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => {
-                  if (!selectedTags.includes(tag)) {
-                    setSelectedTags([...selectedTags, tag]);
-                  }
-                }}
-                className="tag-pill text-xs hover:opacity-80 transition-opacity"
-                style={{
-                  backgroundColor: `${tags[tag].color}33`,
-                  color: tags[tag].color,
-                }}
-              >
-                {tag}
-                <span className="ml-1 text-xs opacity-70">({tags[tag].taskCount || 0})</span>
-              </button>
-            ))}
+            {sortedTags.slice(0, 5).map(tag => {
+              const streakMultiplier = calculateStreakMultiplier(tags[tag].streakDays || 0);
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => {
+                    if (!selectedTags.includes(tag)) {
+                      setSelectedTags([...selectedTags, tag]);
+                    }
+                  }}
+                  className="tag-pill text-xs hover:opacity-80 transition-opacity"
+                  style={{
+                    backgroundColor: `${tags[tag].color}33`,
+                    color: tags[tag].color,
+                  }}
+                >
+                  {tag}
+                  <span className="ml-1 text-xs opacity-70">
+                    ({tags[tag].taskCount || 0}, x{streakMultiplier})
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

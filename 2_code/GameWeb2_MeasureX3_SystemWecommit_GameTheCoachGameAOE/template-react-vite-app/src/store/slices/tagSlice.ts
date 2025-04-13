@@ -5,6 +5,8 @@ export interface Tag {
   level: number;
   color: string;
   taskCount: number;
+  streakDays: number;
+  lastTaskDate: string;
 }
 
 interface TagState {
@@ -34,16 +36,33 @@ const tagSlice = createSlice({
   name: 'tags',
   initialState,
   reducers: {
-    addTagXP: (state, action: PayloadAction<{ tagName: string; value: number }>) => {
-      const { tagName, value } = action.payload;
+    addTagXP: (state, action: PayloadAction<{ tagName: string; value: number; date: string }>) => {
+      const { tagName, value, date } = action.payload;
       if (!state.tags[tagName]) {
         state.tags[tagName] = {
           xp: 0,
           level: 0,
           color: getRandomColor(),
           taskCount: 0,
+          streakDays: 0,
+          lastTaskDate: date,
         };
       }
+
+      // Update streak
+      const lastDate = new Date(state.tags[tagName].lastTaskDate);
+      const currentDate = new Date(date);
+      const dayDiff = Math.floor((currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (dayDiff === 1) {
+        // Consecutive day
+        state.tags[tagName].streakDays += 1;
+      } else if (dayDiff > 1) {
+        // Streak broken
+        state.tags[tagName].streakDays = 1;
+      }
+      
+      state.tags[tagName].lastTaskDate = date;
 
       const xpToAdd = Math.abs(value);
       state.tags[tagName].xp += xpToAdd;
@@ -67,13 +86,13 @@ const tagSlice = createSlice({
 
 const calculateLevel = (xp: number): number => {
   let level = 0;
-  let requiredXP = 100; // Base XP required for level 1
+  let requiredXP = 1000; // Base XP required for level 1
   const LEVEL_XP_MULTIPLIER = 1.5;
   
   while (xp >= requiredXP) {
     level++;
     xp -= requiredXP;
-    requiredXP = Math.floor(100 * Math.pow(LEVEL_XP_MULTIPLIER, level));
+    requiredXP = Math.floor(1000 * Math.pow(LEVEL_XP_MULTIPLIER, level));
   }
   
   return level;
