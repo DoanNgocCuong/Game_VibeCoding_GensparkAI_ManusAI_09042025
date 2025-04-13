@@ -80,18 +80,22 @@
                     </div>
                     
                     <div>
-                        <label for="taskTag" class="block text-sm font-medium text-gray-700">Tag</label>
+                        <label for="taskTag" class="block text-sm font-medium text-gray-700">Tags</label>
+                        <div class="flex flex-wrap gap-2 mb-2" id="selectedTags"></div>
                         <div class="flex">
-                            <input list="tagOptions" id="taskTag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
-                            <datalist id="tagOptions"></datalist>
+                            <input type="text" id="taskTag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Nhập tag mới hoặc chọn từ danh sách">
+                            <button type="button" id="addTagBtn" class="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
-                        <div id="popularTags" class="mt-2 flex flex-wrap"></div>
+                        <datalist id="tagOptions"></datalist>
+                        <div id="popularTags" class="mt-2 flex flex-wrap gap-2"></div>
                     </div>
                     
                     <div>
-                        <label for="taskValue" class="block text-sm font-medium text-gray-700">Giá Trị (VNĐ)</label>
-                        <input type="number" id="taskValue" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
-                        <p class="text-sm text-gray-500 mt-1">Nhập số dương cho thu nhập, số âm cho chi phí</p>
+                        <label for="taskValue" class="block text-sm font-medium text-gray-700">Giá Trị (KINH NGHIỆM)</label>
+                        <input type="number" id="taskValue" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required min="1" max="1000">
+                        <p class="text-sm text-gray-500 mt-1">Nhập số từ 1 đến 1000 cho kinh nghiệm tích lũy, số âm từ -1 đến -1000 cho kinh nghiệm tiêu hao</p>
                     </div>
                     
                     <div>
@@ -178,17 +182,17 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <h3 class="text-sm font-medium text-green-700">Tổng Thu Nhập</h3>
+                    <h3 class="text-sm font-medium text-green-700">Tổng Kinh Nghiệm Tích Lũy</h3>
                     <p id="totalIncome" class="text-2xl font-bold text-green-600 mt-1"></p>
                 </div>
                 
                 <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <h3 class="text-sm font-medium text-red-700">Tổng Chi Phí</h3>
+                    <h3 class="text-sm font-medium text-red-700">Tổng Kinh Nghiệm Tiêu Hao</h3>
                     <p id="totalExpense" class="text-2xl font-bold text-red-600 mt-1"></p>
                 </div>
                 
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h3 class="text-sm font-medium text-blue-700">Số Dư</h3>
+                    <h3 class="text-sm font-medium text-blue-700">Kinh Nghiệm Còn Lại</h3>
                     <p id="netBalance" class="text-2xl font-bold text-blue-600 mt-1"></p>
                 </div>
             </div>
@@ -221,7 +225,7 @@
         let tagDistributionChart = null;
 
         // Constants for game mechanics
-        const XP_PER_1000_VND = 1; // 1 XP per 1,000 VND
+        const XP_PER_1000_VND = 1; // 1 XP per 1 KINH NGHIỆM
         const LEVEL_XP_BASE = 100; // Base XP required for level 1
         const LEVEL_XP_MULTIPLIER = 1.5; // Each level requires 1.5x more XP
 
@@ -247,6 +251,29 @@
                 addTask();
             });
 
+            // Add tag button
+            document.getElementById('addTagBtn').addEventListener('click', function() {
+                const tagInput = document.getElementById('taskTag');
+                const tagName = tagInput.value.trim();
+                
+                if (tagName) {
+                    addTagToSelection(tagName);
+                    tagInput.value = '';
+                }
+            });
+
+            // Tag input enter key
+            document.getElementById('taskTag').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tagName = this.value.trim();
+                    if (tagName) {
+                        addTagToSelection(tagName);
+                        this.value = '';
+                    }
+                }
+            });
+
             // Date navigation
             document.getElementById('prevDayBtn').addEventListener('click', () => navigateDate(-1));
             document.getElementById('nextDayBtn').addEventListener('click', () => navigateDate(1));
@@ -264,7 +291,7 @@
 
         function addTask() {
             const taskName = document.getElementById('taskName').value.trim();
-            const taskTag = document.getElementById('taskTag').value.trim();
+            const taskTags = Array.from(document.getElementById('selectedTags').children).map(tag => tag.textContent.trim());
             const taskValue = parseInt(document.getElementById('taskValue').value);
             const taskDate = new Date(document.getElementById('taskDate').value);
             taskDate.setHours(0, 0, 0, 0);
@@ -276,21 +303,21 @@
             }
 
             // Validate task value
-            if (!taskName || !taskTag || isNaN(taskValue)) {
+            if (!taskName || taskTags.length === 0 || isNaN(taskValue)) {
                 showNotification('Vui lòng điền đầy đủ thông tin', 'error');
                 return;
             }
 
             // Validate task value range
-            if (Math.abs(taskValue) < 1000 || Math.abs(taskValue) > 1000000000) {
-                showNotification('Giá trị task phải từ 1,000 đến 1,000,000,000 VNĐ', 'error');
+            if (Math.abs(taskValue) < 1 || Math.abs(taskValue) > 1000) {
+                showNotification('Giá trị task phải từ 1 đến 1000 KINH NGHIỆM', 'error');
                 return;
             }
 
             const newTask = {
                 id: Date.now(),
                 name: taskName,
-                tag: taskTag,
+                tags: taskTags,
                 value: taskValue,
                 date: taskDate.toISOString(),
                 timestamp: Date.now()
@@ -299,12 +326,15 @@
             tasks.push(newTask);
             saveData();
 
-            // Add XP for the tag
-            addTagXP(taskTag, Math.abs(taskValue));
+            // Add XP for each tag
+            taskTags.forEach(tag => {
+                addTagXP(tag, Math.abs(taskValue));
+            });
 
             // Reset form
             document.getElementById('taskForm').reset();
             document.getElementById('taskDate').valueAsDate = new Date();
+            document.getElementById('selectedTags').innerHTML = '';
 
             // Update UI
             renderTaskList();
@@ -378,26 +408,36 @@
         }
 
         function deleteTask(taskId) {
+            console.log('Attempting to delete task with ID:', taskId);
+            console.log('Current tasks:', tasks);
+            
             const taskIndex = tasks.findIndex(task => task.id === taskId);
+            console.log('Found task at index:', taskIndex);
             
             if (taskIndex !== -1) {
                 const task = tasks[taskIndex];
+                console.log('Task to delete:', task);
                 
                 // Remove the task
                 tasks.splice(taskIndex, 1);
+                console.log('Tasks after deletion:', tasks);
                 saveData();
                 
-                // Remove XP from tag (optional - you might want to keep XP)
-                // If you want to remove XP, uncomment the following:
-                /*
-                if (tags[task.tag]) {
-                    const xpToRemove = Math.floor(Math.abs(task.value) / 1000 * XP_PER_1000_VND);
-                    tags[task.tag].xp = Math.max(0, tags[task.tag].xp - xpToRemove);
-                    tags[task.tag].level = calculateLevel(tags[task.tag].xp);
-                    tags[task.tag].taskCount = Math.max(0, (tags[task.tag].taskCount || 0) - 1);
+                // Remove XP from tags
+                if (task.tags) {
+                    console.log('Removing XP from tags:', task.tags);
+                    task.tags.forEach(tag => {
+                        if (tags[tag]) {
+                            const xpToRemove = Math.abs(task.value);
+                            console.log(`Removing ${xpToRemove} XP from tag:`, tag);
+                            tags[tag].xp = Math.max(0, tags[tag].xp - xpToRemove);
+                            tags[tag].level = calculateLevel(tags[tag].xp);
+                            tags[tag].taskCount = Math.max(0, (tags[tag].taskCount || 0) - 1);
+                            console.log(`Updated tag ${tag}:`, tags[tag]);
+                        }
+                    });
                     saveData();
                 }
-                */
                 
                 // Update UI
                 renderTaskList();
@@ -406,10 +446,14 @@
                 updateDashboard();
                 
                 showNotification('Task đã được xóa', 'info');
+            } else {
+                console.error('Task not found with ID:', taskId);
+                showNotification('Không tìm thấy task để xóa', 'error');
             }
         }
 
         function renderTaskList() {
+            console.log('Rendering task list for date:', currentDate);
             const taskListElement = document.getElementById('taskList');
             const emptyStateElement = document.getElementById('emptyState');
             const taskCountElement = document.getElementById('taskCount');
@@ -417,10 +461,16 @@
             
             // Filter tasks for the current day
             const currentDateStr = currentDate.toISOString().split('T')[0];
+            console.log('Filtering tasks for date:', currentDateStr);
+            
             const dailyTasks = tasks.filter(task => {
                 const taskDate = new Date(task.date);
-                return taskDate.toISOString().split('T')[0] === currentDateStr;
+                const taskDateStr = taskDate.toISOString().split('T')[0];
+                console.log('Checking task date:', taskDateStr, 'against current date:', currentDateStr);
+                return taskDateStr === currentDateStr;
             }).sort((a, b) => b.timestamp - a.timestamp);
+            
+            console.log('Filtered tasks for the day:', dailyTasks);
             
             // Calculate daily total
             const dailyTotal = dailyTasks.reduce((sum, task) => sum + task.value, 0);
@@ -432,9 +482,11 @@
             
             // Show/hide empty state
             if (dailyTasks.length === 0) {
+                console.log('No tasks found, showing empty state');
                 taskListElement.innerHTML = '';
                 emptyStateElement.classList.remove('hidden');
             } else {
+                console.log('Rendering', dailyTasks.length, 'tasks');
                 emptyStateElement.classList.add('hidden');
                 
                 // Render tasks
@@ -442,15 +494,19 @@
                 dailyTasks.forEach(task => {
                     const taskElement = document.createElement('div');
                     taskElement.className = 'bg-gray-50 p-4 rounded-lg border-l-4 flex justify-between items-center task-animation';
-                    taskElement.style.borderLeftColor = tags[task.tag] ? tags[task.tag].color : '#CBD5E0';
+                    taskElement.style.borderLeftColor = task.tags[0] && tags[task.tags[0]] ? tags[task.tags[0]].color : '#CBD5E0';
+                    
+                    const tagsHtml = task.tags.map(tag => `
+                        <span class="tag-pill ml-2 text-xs" style="background-color: ${tags[tag] ? tags[tag].color + '33' : '#CBD5E033'}; color: ${tags[tag] ? tags[tag].color : '#718096'};">
+                            ${tag}
+                        </span>
+                    `).join('');
                     
                     taskElement.innerHTML = `
                         <div class="flex-1">
                             <div class="flex items-start">
                                 <h3 class="font-medium text-gray-800">${task.name}</h3>
-                                <span class="tag-pill ml-2 text-xs" style="background-color: ${tags[task.tag] ? tags[task.tag].color + '33' : '#CBD5E033'}; color: ${tags[task.tag] ? tags[task.tag].color : '#718096'};">
-                                    ${task.tag}
-                                </span>
+                                <div class="flex flex-wrap">${tagsHtml}</div>
                             </div>
                             <div class="mt-1 text-sm text-gray-500">
                                 ${formatTime(new Date(task.timestamp))}
@@ -460,7 +516,7 @@
                             <span class="text-lg font-semibold ${task.value >= 0 ? 'text-green-600' : 'text-red-600'}">
                                 ${formatCurrency(task.value)}
                             </span>
-                            <button class="ml-4 text-gray-400 hover:text-red-500 delete-task transition-colors duration-200" data-task-id="${task.id}">
+                            <button class="ml-4 text-gray-400 hover:text-red-500 delete-task transition-colors duration-200" data-task-id="${task.id}" title="Xóa task">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
@@ -472,8 +528,11 @@
                 // Add event listeners to delete buttons
                 document.querySelectorAll('.delete-task').forEach(button => {
                     button.addEventListener('click', function() {
-                        const taskId = parseInt(this.getAttribute('data-task-id'));
-                        deleteTask(taskId);
+                        if (confirm('Bạn có chắc chắn muốn xóa task này?')) {
+                            const taskId = parseInt(this.getAttribute('data-task-id'));
+                            console.log('Delete button clicked for task ID:', taskId);
+                            deleteTask(taskId);
+                        }
                     });
                 });
             }
@@ -566,7 +625,7 @@
                 data: {
                     labels: dates,
                     datasets: [{
-                        label: 'Thu nhập (VNĐ)',
+                        label: 'Kinh nghiệm (KINH NGHIỆM)',
                         data: incomes,
                         backgroundColor: incomes.map(value => value >= 0 ? 'rgba(72, 187, 120, 0.7)' : 'rgba(229, 62, 62, 0.7)'),
                         borderColor: incomes.map(value => value >= 0 ? 'rgb(47, 133, 90)' : 'rgb(197, 48, 48)'),
@@ -882,6 +941,30 @@
             ];
             
             return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function addTagToSelection(tagName) {
+            const selectedTagsContainer = document.getElementById('selectedTags');
+            
+            // Check if tag already exists
+            if (Array.from(selectedTagsContainer.children).some(tag => tag.textContent.trim() === tagName)) {
+                showNotification('Tag đã được thêm', 'info');
+                return;
+            }
+
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag-pill inline-flex items-center';
+            tagElement.style.backgroundColor = tags[tagName] ? tags[tagName].color + '33' : '#CBD5E033';
+            tagElement.style.color = tags[tagName] ? tags[tagName].color : '#718096';
+            
+            tagElement.innerHTML = `
+                ${tagName}
+                <button type="button" class="ml-1 text-xs hover:text-red-500" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            selectedTagsContainer.appendChild(tagElement);
         }
     </script>
 </body>
