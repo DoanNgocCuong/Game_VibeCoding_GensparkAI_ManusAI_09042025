@@ -7,7 +7,7 @@ import TaskForm from '../components/TaskForm';
 import TaskList from '../components/TaskList';
 import TagLevels from '../components/TagLevels';
 import Charts from '../components/Charts';
-import Dashboard from '../components/Dashboard';
+import ExperienceOverview from '../components/ExperienceOverview';
 import Notification from '../components/Notification';
 
 const TaskManager = () => {
@@ -67,7 +67,7 @@ const TaskManager = () => {
 
       <Charts tasks={tasks} tags={tags} />
 
-      <Dashboard tasks={tasks} tags={tags} />
+      <ExperienceOverview tasks={tasks} tags={tags} />
 
       <div className="fixed bottom-4 right-4 z-50 space-y-2">
         {notifications.map(notification => (

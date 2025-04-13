@@ -3,7 +3,7 @@ import { Task, Tag } from './types';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import TagLevels from './components/TagLevels';
-import Dashboard from './components/Dashboard';
+import ExperienceOverview from './components/ExperienceOverview';
 import Charts from './components/Charts';
 import './App.css';
 
@@ -122,7 +122,7 @@ const App: React.FC = () => {
 
       <Charts tasks={tasks} tags={tags} />
 
-      <Dashboard tasks={tasks} tags={tags} />
+      <ExperienceOverview tasks={tasks} tags={tags} />
     </div>
   );
 };

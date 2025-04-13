@@ -1,12 +1,12 @@
 import { Task } from '../store/slices/taskSlice';
 import { Tag } from '../store/slices/tagSlice';
 
-interface DashboardProps {
+interface ExperienceOverviewProps {
   tasks: Task[];
   tags: Record<string, Tag>;
 }
 
-const Dashboard = ({ tasks, tags }: DashboardProps) => {
+const ExperienceOverview = ({ tasks, tags }: ExperienceOverviewProps) => {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -22,7 +22,7 @@ const Dashboard = ({ tasks, tags }: DashboardProps) => {
   const netBalance = totalIncome + totalExpense;
 
   // Calculate top tags
-  const tagStats: Record<string, { totalValue: number; taskCount: number }> = {};
+  const tagStats: Record<string, { totalValue: number; taskCount: number; streakDays: number }> = {};
   
   tasks.forEach(task => {
     task.tags.forEach(tag => {
@@ -30,6 +30,7 @@ const Dashboard = ({ tasks, tags }: DashboardProps) => {
         tagStats[tag] = {
           totalValue: 0,
           taskCount: 0,
+          streakDays: tags[tag]?.streakDays || 0
         };
       }
       
@@ -44,7 +45,7 @@ const Dashboard = ({ tasks, tags }: DashboardProps) => {
 
   return (
     <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Tổng Quan</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Tổng Quan Kinh Nghiệm</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
@@ -95,7 +96,7 @@ const Dashboard = ({ tasks, tags }: DashboardProps) => {
                     {formatCurrency(stats.totalValue)}
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    Level {tags[tagName] ? tags[tagName].level : 0}
+                    Level {tags[tagName] ? tags[tagName].level : 0} • Streak {stats.streakDays} ngày
                   </div>
                 </div>
               );
@@ -107,4 +108,4 @@ const Dashboard = ({ tasks, tags }: DashboardProps) => {
   );
 };
 
-export default Dashboard; 
+export default ExperienceOverview; 
