@@ -7,12 +7,12 @@ const AppHeader = () => {
   const socialLinks = [
     {
       name: 'Facebook',
-      url: 'https://www.facebook.com/profile.php?id=100009796787828',
+      url: 'https://www.facebook.com/doanngoccuong.nhathuong',
       icon: facebookIcon
     },
     {
       name: 'LinkedIn',
-      url: 'https://www.linkedin.com/in/cuong-doan-ngoc-0a0b23250/',
+      url: 'https://www.linkedin.com/in/doan-ngoc-cuong/',
       icon: linkedinIcon
     },
     {
