@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variable Explorer</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        }
+        
+        body {
+            background-color: #FFF8E7;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #4A90E2;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .badges-display {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .badge {
+            width: 40px;
+            height: 40px;
+            background-color: #F5A623;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.earned {
+            opacity: 1;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Learning Target and Level Styles */
+        .learning-target, .level-indicator {
+            background-color: #E3F2FD;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .level-indicator {
+            background-color: #E8F5E9;
+        }
+        
+        /* Equation Display */
+        .equation {
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        /* Balance Visualization */
+        .balance-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .balance-beam {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .pivot {
+            position: absolute;
+            width: 20px;
+            height: 100px;
+            background-color: #8B4513;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 5px;
+            z-index: 1;
+        }
+        
+        .beam {
+            position: absolute;
+            width: 80%;
+            height: 20px;
+            background-color: #A0522D;
+            left: 10%;
+            top: 50%;
+            transform-origin: center;
+            transform: translateY(-50%) rotate(0deg);
+            border-radius: 5px;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+        }
+        
+        .left-pan, .right-pan {
+            position: absolute;
+            width: 120px;
+            height: 40px;
+            background-color: #CD853F;
+            border-radius: 5px;
+            top: calc(50% + 40px);
+            transform-origin: center top;
+            z-index: 3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .left-pan {
+            left: calc(25% - 60px);
+        }
+        
+        .right-pan {
+            right: calc(25% - 60px);
+        }
+        
+        .weight {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            background-color: #CD853F;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 4;
+        }
+        
+        .left-weight {
+            left: calc(25% - 40px);
+            top: calc(50% + 10px);
+        }
+        
+        .right-weight {
+            right: calc(25% - 40px);
+            top: calc(50% + 10px);
+        }
+        
+        .variable-box {
+            background-color: #F5A623;
+            padding: 5px;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        
+        .constant-box {
+            background-color: #4A90E2;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        /* Controls */
+        .controls {
+            background-color: #F5F5F5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .variable-display {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 20px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 30px;
+            height: 30px;
+            background: #4A90E2;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .variable-value {
+            font-size: 1.5rem;
+            color: #F5A623;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .reset-button {
+            background-color: #F44336;
+            color: white;
+        }
+        
+        .hint-button {
+            background-color: #9C27B0;
+            color: white;
+        }
+        
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Character and Message */
+        .character-container {
+            background-color: #E3F2FD;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .fox-container {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+        
+        .fox-body {
+            width: 60px;
+            height: 60px;
+            background-color: #F5A623;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        
+        .fox-ear {
+            width: 20px;
+            height: 20px;
+            background-color: #F5A623;
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+        }
+        
+        .fox-ear-left {
+            top: 0;
+            left: 15px;
+            transform: rotate(-30deg);
+        }
+        
+        .fox-ear-right {
+            top: 0;
+            right: 15px;
+            transform: rotate(30deg);
+        }
+        
+        .fox-face {
+            width: 50px;
+            height: 50px;
+            background-color: #F5A623;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .fox-eyes {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .fox-eye {
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+        }
+        
+        .fox-nose {
+            width: 8px;
+            height: 8px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 30px;
+        }
+        
+        .fox-tail {
+            width: 20px;
+            height: 40px;
+            background-color: #F5A623;
+            border-radius: 0 0 50% 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transform: rotate(30deg);
+        }
+        
+        .message-bubble {
+            background-color: white;
+            padding: 15px;
+            border-radius: 20px;
+            margin-left: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 70%;
+            position: relative;
+        }
+        
+        .message-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 10px 10px 10px 0;
+            border-style: solid;
+            border-color: transparent white transparent transparent;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .action-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .journal-button {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .next-button {
+            background-color: #9C27B0;
+            color: white;
+        }
+        
+        .action-button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #FFF8E7;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #333;
+        }
+        
+        /* Journal Styles */
+        .journal-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4A90E2;
+        }
+        
+        .journal-section {
+            margin-bottom: 30px;
+        }
+        
+        .journal-section h2 {
+            color: #4A90E2;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .journal-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .journal-badge {
+            width: 60px;
+            height: 60px;
+            background-color: #F5A623;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .journal-badge.earned {
+            opacity: 1;
+        }
+        
+        .journal-badge:hover {
+            transform: scale(1.1);
+        }
+        
+        #solved-equations-list {
+            list-style-type: none;
+        }
+        
+        #solved-equations-list li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #E3F2FD;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Animation Classes */
+        .balance-correct {
+            animation: correct-animation 1s;
+        }
+        
+        .balance-incorrect {
+            animation: incorrect-animation 1s;
+        }
+        
+        @keyframes correct-animation {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(2deg); }
+            50% { transform: translateY(-50%) rotate(-1deg); }
+            75% { transform: translateY(-50%) rotate(1deg); }
+        }
+        
+        @keyframes incorrect-animation {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(5deg); }
+            50% { transform: translateY(-50%) rotate(-5deg); }
+            75% { transform: translateY(-50%) rotate(3deg); }
+        }
+        
+        /* Celebration Animation */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #F5A623;
+            opacity: 0;
+            animation: confetti-fall 3s ease-in-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive Styles for Variable Explorer */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            header {
+                padding: 10px 15px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .learning-target, .level-indicator {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .equation {
+                font-size: 1.5rem;
+                margin: 15px 0;
+            }
+            
+            .balance-container {
+                height: 250px;
+                transform: scale(0.85);
+                margin: -20px 0;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .control-button {
+                margin: 5px 0;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .slider-container {
+                width: 90%;
+            }
+            
+            .fox-container {
+                transform: scale(0.9);
+                margin-left: -10px;
+            }
+            
+            .message-bubble {
+                max-width: 80%;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-button {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .modal-content {
+                width: 90%;
+                max-height: 80vh;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .badges-display {
+                transform: scale(0.8);
+            }
+            
+            .learning-target, .level-indicator {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            .equation {
+                font-size: 1.3rem;
+            }
+            
+            .balance-container {
+                height: 220px;
+                transform: scale(0.7);
+                margin: -30px 0;
+            }
+            
+            .variable-display {
+                font-size: 0.9rem;
+            }
+            
+            .control-button {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            .fox-container {
+                transform: scale(0.8);
+                margin-left: -15px;
+            }
+            
+            .message-bubble {
+                max-width: 75%;
+                font-size: 0.8rem;
+            }
+            
+            .journal-section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .progress-label {
+                font-size: 0.8rem;
+            }
+            
+            .progress-bar {
+                height: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Variable Explorer</h1>
+            <div class="badges-display">
+                <div id="badge1" class="badge">🔍</div>
+                <div id="badge2" class="badge">🧩</div>
+                <div id="badge3" class="badge">🏆</div>
+            </div>
+        </header>
+        
+        <div class="learning-target">
+            Learning Target: I can understand how variables work in equations
+        </div>
+        
+        <div class="level-indicator">
+            Level: 1 - One-step Equations
+        </div>
+        
+        <div class="equation">
+            x + 5 = 10
+        </div>
+        
+        <div class="balance-container">
+            <div class="balance-beam">
+                <div class="pivot"></div>
+                <div id="beam" class="beam"></div>
+                <div class="left-pan"></div>
+                <div class="right-pan"></div>
+                <div class="left-weight">
+                    <span id="variable-display" class="variable-box">x</span><span class="constant-box">5</span>
+                </div>
+                <div class="right-weight">
+                    <span class="constant-box">10</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="variable-display">
+                <label for="variable-slider">x = </label>
+            </div>
+            
+            <div class="slider-container">
+                <input type="range" id="variable-slider" min="0" max="20" value="0" step="1">
+                <span id="variable-value" class="variable-value">0</span>
+            </div>
+            
+            <div class="control-buttons">
+                <button id="test-button" class="control-button test-button">Test Value</button>
+                <button id="reset-button" class="control-button reset-button">Reset</button>
+                <button id="hint-button" class="control-button hint-button">Show Hint</button>
+            </div>
+        </div>
+        
+        <div class="character-container">
+            <div class="fox-container">
+                <div class="fox-body"></div>
+                <div class="fox-ear fox-ear-left"></div>
+                <div class="fox-ear fox-ear-right"></div>
+                <div class="fox-face">
+                    <div id="fox-expression" class="fox-eyes">
+                        <div class="fox-eye"></div>
+                        <div class="fox-eye"></div>
+                    </div>
+                    <div class="fox-nose"></div>
+                </div>
+                <div class="fox-tail"></div>
+            </div>
+            
+            <div id="feedback-message" class="message-bubble">
+                Try finding a value for x that makes both sides of the equation equal!
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="journal-button" class="action-button journal-button">Explorer's Journal</button>
+            <button id="next-button" class="action-button next-button">Next Challenge</button>
+        </div>
+    </div>
+    
+    <!-- Journal Modal -->
+    <div id="journal-modal" class="modal">
+        <div class="modal-content">
+            <button id="close-journal" class="close-button">×</button>
+            <h1 class="journal-title">Explorer's Journal</h1>
+            
+            <div class="journal-section">
+                <h2>My Badges</h2>
+                <div class="journal-badges">
+                    <div id="journal-badge1" class="journal-badge">🔍</div>
+                    <div id="journal-badge2" class="journal-badge">🧩</div>
+                    <div id="journal-badge3" class="journal-badge">🏆</div>
+                </div>
+            </div>
+            
+            <div class="journal-section">
+                <h2>Solved Equations</h2>
+                <ul id="solved-equations-list">
+                    <!-- Solved equations will be added here -->
+                </ul>
+            </div>
+            
+            <div class="journal-section">
+                <h2>My Progress</h2>
+                <div class="progress-bars">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Level 1: One-step Equations</span>
+                            <span id="level1-progress">0/3</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="level1-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Level 2: Two-step Equations</span>
+                            <span id="level2-progress">0/3</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="level2-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Level 3: Variables on Both Sides</span>
+                            <span id="level3-progress">0/3</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="level3-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Celebration Container -->
+    <div id="celebration-container" class="celebration"></div>
+    
+    <script>
+        // DOM Elements
+        const variableSlider = document.getElementById('variable-slider');
+        const variableValueElement = document.getElementById('variable-value');
+        const testButton = document.getElementById('test-button');
+        const resetButton = document.getElementById('reset-button');
+        const hintButton = document.getElementById('hint-button');
+        const beam = document.getElementById('beam');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const foxExpression = document.getElementById('fox-expression');
+        const journalButton = document.getElementById('journal-button');
+        const nextButton = document.getElementById('next-button');
+        const journalModal = document.getElementById('journal-modal');
+        const closeJournalButton = document.getElementById('close-journal');
+        const solvedEquationsList = document.getElementById('solved-equations-list');
+        const badges = {
+            badge1: document.getElementById('badge1'),
+            badge2: document.getElementById('badge2'),
+            badge3: document.getElementById('badge3'),
+            journalbadge1: document.getElementById('journal-badge1'),
+            journalbadge2: document.getElementById('journal-badge2'),
+            journalbadge3: document.getElementById('journal-badge3')
+        };
+        const celebrationContainer = document.getElementById('celebration-container');
+        const level1Progress = document.getElementById('level1-progress');
+        const level2Progress = document.getElementById('level2-progress');
+        const level3Progress = document.getElementById('level3-progress');
+        const level1Fill = document.getElementById('level1-fill');
+        const level2Fill = document.getElementById('level2-fill');
+        const level3Fill = document.getElementById('level3-fill');
+        
+        // Game State
+        const gameState = {
+            variableValue: 0,
+            currentLevel: 1,
+            currentEquation: null,
+            solvedEquations: [],
+            badges: {
+                badge1: false,
+                badge2: false,
+                badge3: false
+            }
+        };
+        
+        // Levels and Equations
+        const levels = [
+            {
+                level: 1,
+                name: "One-step Equations",
+                equations: [
+                    { id: "1-1", text: "x + 5 = 10", solution: { x: 5 } },
+                    { id: "1-2", text: "x - 3 = 7", solution: { x: 10 } },
+                    { id: "1-3", text: "2x = 14", solution: { x: 7 } }
+                ]
+            },
+            {
+                level: 2,
+                name: "Two-step Equations",
+                equations: [
+                    { id: "2-1", text: "2x + 3 = 11", solution: { x: 4 } },
+                    { id: "2-2", text: "3x - 5 = 10", solution: { x: 5 } },
+                    { id: "2-3", text: "4x + 2 = 18", solution: { x: 4 } }
+                ]
+            },
+            {
+                level: 3,
+                name: "Variables on Both Sides",
+                equations: [
+                    { id: "3-1", text: "2x + 3 = x + 8", solution: { x: 5 } },
+                    { id: "3-2", text: "3x - 2 = 2x + 4", solution: { x: 6 } },
+                    { id: "3-3", text: "4x + 5 = 3x + 12", solution: { x: 7 } }
+                ]
+            }
+        ];
+        
+        // Feedback Messages
+        const feedbackMessages = {
+            intro: "Try finding a value for x that makes both sides of the equation equal!",
+            correct: "Great job! You found the correct value for x!",
+            incorrect: "The equation isn't balanced yet. Try again!",
+            hint: {
+                level1: "Try thinking about what number plus or minus the constant equals the right side.",
+                level2: "First, isolate the variable term, then solve for x.",
+                level3: "Move all variable terms to one side, then solve like a one or two-step equation."
+            }
+        };
+        
+        // Initialize Game
+        function initGame() {
+            // Set initial equation
+            gameState.currentEquation = levels[0].equations[0];
+            
+            // Set up event listeners
+            variableSlider.addEventListener('input', handleSliderChange);
+            testButton.addEventListener('click', handleTestClick);
+            resetButton.addEventListener('click', handleResetClick);
+            hintButton.addEventListener('click', handleHintClick);
+            journalButton.addEventListener('click', openJournal);
+            closeJournalButton.addEventListener('click', closeJournal);
+            nextButton.addEventListener('click', handleNextClick);
+            
+            // Update UI
+            updateUI();
+        }
+        
+        // Update UI based on game state
+        function updateUI() {
+            // Update equation display
+            document.querySelector('.equation').textContent = gameState.currentEquation.text;
+            
+            // Update level indicator
+            document.querySelector('.level-indicator').textContent = `Level: ${gameState.currentLevel} - ${levels[gameState.currentLevel - 1].name}`;
+            
+            // Update weights display based on current equation
+            updateWeightsDisplay();
+            
+            // Update balance
+            updateBalance();
+        }
+        
+        // Update weights display based on current equation
+        function updateWeightsDisplay() {
+            const equation = gameState.currentEquation;
+            const leftWeightElement = document.querySelector('.left-weight');
+            const rightWeightElement = document.querySelector('.right-weight');
+            
+            // Simple parsing for demonstration
+            if (equation.id.startsWith("1-")) {
+                // One-step equations
+                if (equation.text.includes("+")) {
+                    leftWeightElement.innerHTML = `<span id="variable-display" class="variable-box">x</span><span class="constant-box">${equation.text.split("+")[1].split("=")[0].trim()}</span>`;
+                    rightWeightElement.innerHTML = `<span class="constant-box">${equation.text.split("=")[1].trim()}</span>`;
+                } else if (equation.text.includes("-")) {
+                    leftWeightElement.innerHTML = `<span id="variable-display" class="variable-box">x</span>`;
+                    rightWeightElement.innerHTML = `<span class="constant-box">${equation.text.split("=")[1].trim()}</span><span class="constant-box">+${equation.text.split("-")[1].split("=")[0].trim()}</span>`;
+                } else {
+                    // Multiplication case (e.g., 2x = 14)
+                    const coefficient = equation.text.split("x")[0].trim();
+                    leftWeightElement.innerHTML = `<span id="variable-display" class="variable-box">${coefficient}x</span>`;
+                    rightWeightElement.innerHTML = `<span class="constant-box">${equation.text.split("=")[1].trim()}</span>`;
+                }
+            } else {
+                // For simplicity, just show the equation parts
+                leftWeightElement.innerHTML = `<span id="variable-display" class="variable-box">Left</span>`;
+                rightWeightElement.innerHTML = `<span class="constant-box">Right</span>`;
+            }
+        }
+        
+        // Handle slider change
+        function handleSliderChange() {
+            gameState.variableValue = parseInt(variableSlider.value);
+            variableValueElement.textContent = gameState.variableValue;
+            updateBalance();
+        }
+        
+        // Update balance visualization
+        function updateBalance() {
+            const equation = gameState.currentEquation;
+            const x = gameState.variableValue;
+            let leftSide, rightSide;
+            
+            // Evaluate equation sides
+            if (equation.id.startsWith("1-")) {
+                // One-step equations
+                if (equation.text.includes("+")) {
+                    const constant = parseInt(equation.text.split("+")[1].split("=")[0].trim());
+                    leftSide = x + constant;
+                    rightSide = parseInt(equation.text.split("=")[1].trim());
+                } else if (equation.text.includes("-")) {
+                    const constant = parseInt(equation.text.split("-")[1].split("=")[0].trim());
+                    leftSide = x - constant;
+                    rightSide = parseInt(equation.text.split("=")[1].trim());
+                } else {
+                    // Multiplication case (e.g., 2x = 14)
+                    const coefficient = parseInt(equation.text.split("x")[0].trim());
+                    leftSide = coefficient * x;
+                    rightSide = parseInt(equation.text.split("=")[1].trim());
+                }
+            } else if (equation.id.startsWith("2-")) {
+                // Two-step equations (simplified parsing)
+                if (equation.text.includes("+")) {
+                    const parts = equation.text.split("+");
+                    const coefficient = parseInt(parts[0].trim().replace("x", ""));
+                    const constant = parseInt(parts[1].split("=")[0].trim());
+                    leftSide = coefficient * x + constant;
+                    rightSide = parseInt(parts[1].split("=")[1].trim());
+                } else {
+                    const parts = equation.text.split("-");
+                    const coefficient = parseInt(parts[0].trim().replace("x", ""));
+                    const constant = parseInt(parts[1].split("=")[0].trim());
+                    leftSide = coefficient * x - constant;
+                    rightSide = parseInt(parts[1].split("=")[1].trim());
+                }
+            } else {
+                // Variables on both sides (simplified)
+                leftSide = x * 2;  // Placeholder
+                rightSide = x + 5; // Placeholder
+            }
+            
+            // Calculate rotation angle based on difference
+            const difference = leftSide - rightSide;
+            const maxRotation = 20; // Maximum rotation in degrees
+            const rotationAngle = Math.min(Math.max(-maxRotation, difference * 2), maxRotation);
+            
+            // Apply rotation to beam
+            beam.style.transform = `translateY(-50%) rotate(${rotationAngle}deg)`;
+        }
+        
+        // Set character state
+        function setCharacterState(state) {
+            switch (state) {
+                case 'happy':
+                    foxExpression.innerHTML = `
+                        <div class="fox-eye" style="height: 2px; margin-top: 4px;"></div>
+                        <div class="fox-eye" style="height: 2px; margin-top: 4px;"></div>
+                    `;
+                    break;
+                case 'thinking':
+                    foxExpression.innerHTML = `
+                        <div class="fox-eye" style="transform: rotate(20deg);"></div>
+                        <div class="fox-eye" style="transform: rotate(-20deg);"></div>
+                    `;
+                    break;
+                case 'surprised':
+                    foxExpression.innerHTML = `
+                        <div class="fox-eye" style="transform: scale(1.5);"></div>
+                        <div class="fox-eye" style="transform: scale(1.5);"></div>
+                    `;
+                    break;
+                default: // normal
+                    foxExpression.innerHTML = `
+                        <div class="fox-eye"></div>
+                        <div class="fox-eye"></div>
+                    `;
+            }
+        }
+        
+        // Handle test button click
+        function handleTestClick() {
+            const equation = gameState.currentEquation;
+            const x = gameState.variableValue;
+            
+            // Check if solution is correct
+            if (x === equation.solution.x) {
+                // Correct solution
+                feedbackMessage.textContent = feedbackMessages.correct;
+                setCharacterState('happy');
+                beam.classList.add('balance-correct');
+                
+                // Add to solved equations if not already solved
+                if (!gameState.solvedEquations.includes(equation.id)) {
+                    gameState.solvedEquations.push(equation.id);
+                    
+                    // Update progress
+                    updateProgressDisplay();
+                    
+                    // Check for badges
+                    checkForBadges();
+                }
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    beam.classList.remove('balance-correct');
+                }, 1000);
+            } else {
+                // Incorrect solution
+                feedbackMessage.textContent = feedbackMessages.incorrect;
+                setCharacterState('surprised');
+                beam.classList.add('balance-incorrect');
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    beam.classList.remove('balance-incorrect');
+                    setCharacterState('normal');
+                }, 1000);
+            }
+        }
+        
+        // Check for badges
+        function checkForBadges() {
+            // Badge 1: Solve first equation
+            if (gameState.solvedEquations.length === 1 && !gameState.badges.badge1) {
+                awardBadge('badge1');
+            }
+            
+            // Badge 2: Solve at least one equation from each level
+            const level1Solved = gameState.solvedEquations.some(id => id.startsWith("1-"));
+            const level2Solved = gameState.solvedEquations.some(id => id.startsWith("2-"));
+            const level3Solved = gameState.solvedEquations.some(id => id.startsWith("3-"));
+            
+            if (level1Solved && level2Solved && !gameState.badges.badge2) {
+                awardBadge('badge2');
+            }
+            
+            // Badge 3: Solve all equations
+            if (gameState.solvedEquations.length === 9 && !gameState.badges.badge3) {
+                awardBadge('badge3');
+            }
+        }
+        
+        // Update progress display
+        function updateProgressDisplay() {
+            // Count solved equations by level
+            const level1Count = gameState.solvedEquations.filter(id => id.startsWith("1-")).length;
+            const level2Count = gameState.solvedEquations.filter(id => id.startsWith("2-")).length;
+            const level3Count = gameState.solvedEquations.filter(id => id.startsWith("3-")).length;
+            
+            // Update progress text
+            level1Progress.textContent = `${level1Count}/3`;
+            level2Progress.textContent = `${level2Count}/3`;
+            level3Progress.textContent = `${level3Count}/3`;
+            
+            // Update progress bars
+            level1Fill.style.width = `${(level1Count / 3) * 100}%`;
+            level2Fill.style.width = `${(level2Count / 3) * 100}%`;
+            level3Fill.style.width = `${(level3Count / 3) * 100}%`;
+        }
+        
+        // Set level
+        function setLevel(level) {
+            if (level >= 1 && level <= 3) {
+                gameState.currentLevel = level;
+                
+                // Get a random equation from this level that hasn't been solved
+                const availableEquations = levels[level - 1].equations.filter(
+                    eq => !gameState.solvedEquations.includes(eq.id)
+                );
+                
+                if (availableEquations.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availableEquations.length);
+                    gameState.currentEquation = availableEquations[randomIndex];
+                } else {
+                    // If all equations in this level are solved, just pick a random one
+                    const randomIndex = Math.floor(Math.random() * levels[level - 1].equations.length);
+                    gameState.currentEquation = levels[level - 1].equations[randomIndex];
+                }
+                
+                // Reset variable value
+                gameState.variableValue = 0;
+                variableSlider.value = 0;
+                variableValueElement.textContent = 0;
+                
+                // Reset feedback
+                feedbackMessage.textContent = feedbackMessages.intro;
+                setCharacterState('normal');
+                
+                // Update UI
+                updateUI();
+            }
+        }
+        
+        // Handle reset button click
+        function handleResetClick() {
+            // Reset variable value
+            gameState.variableValue = 0;
+            variableSlider.value = 0;
+            variableValueElement.textContent = 0;
+            
+            feedbackMessage.textContent = feedbackMessages.intro;
+            setCharacterState('normal');
+            
+            updateBalance();
+        }
+        
+        // Handle hint button click
+        function handleHintClick() {
+            const levelKey = `level${gameState.currentLevel}`;
+            feedbackMessage.textContent = feedbackMessages.hint[levelKey];
+            setCharacterState('thinking');
+        }
+        
+        // Handle next button click
+        function handleNextClick() {
+            // Get a new equation from the current level
+            const availableEquations = levels[gameState.currentLevel - 1].equations.filter(
+                eq => !gameState.solvedEquations.includes(eq.id)
+            );
+            
+            if (availableEquations.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableEquations.length);
+                gameState.currentEquation = availableEquations[randomIndex];
+            } else {
+                // If all equations in this level are solved, move to next level if available
+                if (gameState.currentLevel < 3) {
+                    setLevel(gameState.currentLevel + 1);
+                    return;
+                } else {
+                    // If all levels are complete, just pick a random equation
+                    const randomLevel = Math.floor(Math.random() * levels.length);
+                    const randomIndex = Math.floor(Math.random() * levels[randomLevel].equations.length);
+                    gameState.currentEquation = levels[randomLevel].equations[randomIndex];
+                }
+            }
+            
+            // Reset variable value
+            gameState.variableValue = 0;
+            variableSlider.value = 0;
+            variableValueElement.textContent = 0;
+            
+            // Reset feedback
+            feedbackMessage.textContent = feedbackMessages.intro;
+            setCharacterState('normal');
+            
+            // Update UI
+            updateUI();
+        }
+        
+        // Open journal
+        function openJournal() {
+            journalModal.style.display = 'block';
+            updateProgressDisplay();
+        }
+        
+        // Close journal
+        function closeJournal() {
+            journalModal.style.display = 'none';
+        }
+        
+        // Add equation to journal
+        function addToJournal(equation) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${equation.text} (x = ${equation.solution.x})`;
+            solvedEquationsList.appendChild(listItem);
+        }
+        
+        // Award badge
+        function awardBadge(badgeId) {
+            gameState.badges[badgeId] = true;
+            badges[badgeId].classList.add('earned');
+            badges[`journal${badgeId}`].classList.add('earned');
+            
+            // Show celebration
+            showCelebration();
+        }
+        
+        // Show celebration animation
+        function showCelebration() {
+            celebrationContainer.innerHTML = '';
+            celebrationContainer.style.display = 'block';
+            
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.width = `${5 + Math.random() * 10}px`;
+                confetti.style.height = `${5 + Math.random() * 10}px`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                celebrationContainer.appendChild(confetti);
+            }
+            
+            // Hide celebration after animation
+            setTimeout(() => {
+                celebrationContainer.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Get random color
+        function getRandomColor() {
+            const colors = ['#F5A623', '#4A90E2', '#4CAF50', '#9C27B0', '#F44336'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Initialize the game when the page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

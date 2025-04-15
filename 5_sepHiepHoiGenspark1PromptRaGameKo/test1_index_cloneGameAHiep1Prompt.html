@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance the Equation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f9ff;
+            min-height: 100vh;
+        }
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .equation-display {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+        .slider-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 15px;
+            border-radius: 10px;
+            background: #d1d5db;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .slider::-webkit-slider-thumb:hover {
+            background: #2563eb;
+            transform: scale(1.1);
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 5px;
+            background-color: #e5e7eb;
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+        .badge.earned {
+            background-color: #fcd34d;
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        .character {
+            font-size: 3rem;
+            transition: all 0.5s;
+        }
+        .journal-entry {
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        .journal-entry:hover {
+            border-left-color: #2563eb;
+            background-color: #e5e7eb;
+        }
+        .level-indicator {
+            position: relative;
+            height: 10px;
+            background-color: #d1d5db;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .level-progress {
+            position: absolute;
+            height: 100%;
+            background-color: #3b82f6;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="bg-white shadow-lg rounded-lg p-6 my-4">
+            <h1 class="text-3xl font-bold text-center text-indigo-700 mb-4">Balance the Equation</h1>
+            
+            <div class="level-info flex justify-between items-center mb-4">
+                <span class="font-bold text-gray-700">Level: <span id="level-display">1</span></span>
+                <div class="w-3/4">
+                    <div class="level-indicator">
+                        <div class="level-progress" id="level-progress"></div>
+                    </div>
+                </div>
+                <span class="font-bold text-gray-700">Score: <span id="score-display">0</span></span>
+            </div>
+            
+            <div class="equation-section bg-blue-50 p-4 rounded-lg mb-6">
+                <div class="equation-display text-center py-4" id="equation-display">
+                    2x + 3 = 7
+                </div>
+                
+                <div class="slider-container">
+                    <div class="flex justify-between text-gray-600 mb-1">
+                        <span>-10</span>
+                        <span>0</span>
+                        <span>10</span>
+                    </div>
+                    <input type="range" min="-10" max="10" step="0.5" value="0" class="slider" id="variable-slider">
+                    <div class="text-center mt-2">
+                        <span class="text-xl font-semibold" id="slider-value">x = 0</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center mt-4">
+                    <button id="test-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 shadow-md">
+                        Test Value
+                    </button>
+                </div>
+            </div>
+            
+            <div class="feedback-section flex justify-center items-center mb-6">
+                <div class="character text-center" id="character-feedback">
+                    😐
+                </div>
+                <div class="ml-4 text-lg font-semibold text-gray-700" id="text-feedback">
+                    Drag the slider to find the value of x that makes the equation true.
+                </div>
+            </div>
+            
+            <div class="achievements-section mb-6">
+                <h2 class="text-xl font-bold text-gray-700 mb-3">Badges</h2>
+                <div class="flex flex-wrap justify-center" id="badges-container">
+                    <div class="badge" title="First Equation Solved"><i class="fas fa-star text-2xl"></i></div>
+                    <div class="badge" title="5 Equations Solved"><i class="fas fa-award text-2xl"></i></div>
+                    <div class="badge" title="10 Equations Solved"><i class="fas fa-trophy text-2xl"></i></div>
+                    <div class="badge" title="Complete Level 1"><i class="fas fa-1 text-2xl"></i></div>
+                    <div class="badge" title="Complete Level 2"><i class="fas fa-2 text-2xl"></i></div>
+                    <div class="badge" title="Complete Level 3"><i class="fas fa-3 text-2xl"></i></div>
+                    <div class="badge" title="Math Genius"><i class="fas fa-brain text-2xl"></i></div>
+                    <div class="badge" title="Perfect Solver"><i class="fas fa-check-circle text-2xl"></i></div>
+                </div>
+            </div>
+            
+            <div class="journal-section">
+                <h2 class="text-xl font-bold text-gray-700 mb-3">Progress Journal</h2>
+                <div class="bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto" id="journal-container">
+                    <div class="journal-entry bg-white p-3 rounded">
+                        <div class="font-semibold">Welcome!</div>
+                        <div class="text-gray-600">Start solving equations to build your journal.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white shadow-lg rounded-lg p-6 my-4">
+            <h2 class="text-2xl font-bold text-center text-indigo-700 mb-4">How to Play</h2>
+            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                <li>Adjust the slider to find the value of the variable (x) that makes the equation true</li>
+                <li>Click "Test Value" to see if your answer is correct</li>
+                <li>Progress through levels of increasing difficulty</li>
+                <li>Earn badges for your achievements</li>
+                <li>Track your progress in the journal</li>
+            </ul>
+            
+            <div class="mt-6">
+                <h3 class="font-bold text-lg text-gray-700">Difficulty Levels:</h3>
+                <div class="pl-6 space-y-1 text-gray-600">
+                    <div>Level 1: One-step equations (e.g., x + 5 = 10)</div>
+                    <div>Level 2: Two-step equations (e.g., 2x + 3 = 9)</div>
+                    <div>Level 3: Equations with variables on both sides (e.g., 3x - 1 = x + 5)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            const gameState = {
+                level: 1,
+                score: 0,
+                equationsSolved: 0,
+                currentEquation: null,
+                badges: {
+                    firstSolved: false,
+                    fiveSolved: false,
+                    tenSolved: false,
+                    level1Complete: false,
+                    level2Complete: false,
+                    level3Complete: false,
+                    mathGenius: false,
+                    perfectSolver: false
+                },
+                perfectStreak: 0,
+                totalAttempts: 0,
+                correctAttempts: 0
+            };
+
+            // DOM Elements
+            const levelDisplay = document.getElementById('level-display');
+            const scoreDisplay = document.getElementById('score-display');
+            const equationDisplay = document.getElementById('equation-display');
+            const variableSlider = document.getElementById('variable-slider');
+            const sliderValue = document.getElementById('slider-value');
+            const testBtn = document.getElementById('test-btn');
+            const characterFeedback = document.getElementById('character-feedback');
+            const textFeedback = document.getElementById('text-feedback');
+            const badgesContainer = document.getElementById('badges-container');
+            const journalContainer = document.getElementById('journal-container');
+            const levelProgress = document.getElementById('level-progress');
+
+            // Equation generator
+            function generateEquation(level) {
+                let equation = {};
+                
+                if (level === 1) {
+                    // One-step equations: x + a = b or x - a = b
+                    const a = Math.floor(Math.random() * 10) + 1;
+                    const solution = Math.floor(Math.random() * 10);
+                    const b = Math.random() > 0.5 ? solution + a : solution - a;
+                    const operation = b === solution + a ? '+' : '-';
+                    
+                    equation = {
+                        display: `x ${operation} ${a} = ${b}`,
+                        solution: solution,
+                        evaluate: function(x) {
+                            return operation === '+' ? x + a : x - a;
+                        },
+                        rightSide: b
+                    };
+                } else if (level === 2) {
+                    // Two-step equations: ax + b = c
+                    const a = Math.floor(Math.random() * 5) + 1;
+                    const b = Math.floor(Math.random() * 10);
+                    const solution = Math.floor(Math.random() * 10) - 5;
+                    const c = a * solution + b;
+                    
+                    equation = {
+                        display: `${a}x + ${b} = ${c}`,
+                        solution: solution,
+                        evaluate: function(x) {
+                            return a * x + b;
+                        },
+                        rightSide: c
+                    };
+                } else {
+                    // Variables on both sides: ax + b = cx + d
+                    const a = Math.floor(Math.random() * 5) + 2;
+                    const c = Math.floor(Math.random() * 3) + 1;
+                    const b = Math.floor(Math.random() * 10);
+                    const solution = Math.floor(Math.random() * 10) - 5;
+                    const d = (a * solution + b) - (c * solution);
+                    
+                    equation = {
+                        display: `${a}x + ${b} = ${c}x + ${d}`,
+                        solution: solution,
+                        evaluate: function(x) {
+                            return a * x + b;
+                        },
+                        rightSide: function(x) {
+                            return c * x + d;
+                        }
+                    };
+                }
+                
+                return equation;
+            }
+
+            // Update the slider value display
+            variableSlider.addEventListener('input', function() {
+                sliderValue.textContent = `x = ${this.value}`;
+            });
+
+            // Test button click handler
+            testBtn.addEventListener('click', function() {
+                const userValue = parseFloat(variableSlider.value);
+                testAnswer(userValue);
+            });
+
+            function testAnswer(userValue) {
+                gameState.totalAttempts++;
+                
+                let leftSide = gameState.currentEquation.evaluate(userValue);
+                let rightSide = typeof gameState.currentEquation.rightSide === 'function' 
+                    ? gameState.currentEquation.rightSide(userValue) 
+                    : gameState.currentEquation.rightSide;
+                
+                // Allow for small floating point errors
+                const isCorrect = Math.abs(leftSide - rightSide) < 0.001;
+                
+                if (isCorrect) {
+                    characterFeedback.textContent = '😄';
+                    textFeedback.textContent = 'Correct! The equation is balanced.';
+                    textFeedback.className = 'ml-4 text-lg font-semibold text-green-700';
+                    
+                    gameState.score += 10 * gameState.level;
+                    gameState.equationsSolved++;
+                    gameState.correctAttempts++;
+                    gameState.perfectStreak++;
+                    
+                    // Check for badges
+                    checkBadges();
+                    
+                    // Add journal entry
+                    addJournalEntry(`Solved: ${gameState.currentEquation.display} with x = ${userValue}`);
+                    
+                    // Update UI
+                    scoreDisplay.textContent = gameState.score;
+                    
+                    // Check for level progression
+                    if (gameState.equationsSolved % 5 === 0 && gameState.level < 3) {
+                        gameState.level++;
+                        levelDisplay.textContent = gameState.level;
+                        addJournalEntry(`Advanced to Level ${gameState.level}!`);
+                    }
+                    
+                    // Update level progress bar
+                    updateLevelProgress();
+                    
+                    // Generate new equation after a delay
+                    setTimeout(function() {
+                        generateNewEquation();
+                    }, 1500);
+                } else {
+                    characterFeedback.textContent = '😕';
+                    textFeedback.textContent = `Not quite! Left side = ${leftSide}, Right side = ${rightSide}`;
+                    textFeedback.className = 'ml-4 text-lg font-semibold text-red-700';
+                    gameState.perfectStreak = 0;
+                }
+            }
+
+            function checkBadges() {
+                // First equation solved
+                if (gameState.equationsSolved === 1 && !gameState.badges.firstSolved) {
+                    gameState.badges.firstSolved = true;
+                    updateBadge(0);
+                    addJournalEntry('Badge earned: First Equation Solved!');
+                }
+                
+                // 5 equations solved
+                if (gameState.equationsSolved === 5 && !gameState.badges.fiveSolved) {
+                    gameState.badges.fiveSolved = true;
+                    updateBadge(1);
+                    addJournalEntry('Badge earned: 5 Equations Solved!');
+                }
+                
+                // 10 equations solved
+                if (gameState.equationsSolved === 10 && !gameState.badges.tenSolved) {
+                    gameState.badges.tenSolved = true;
+                    updateBadge(2);
+                    addJournalEntry('Badge earned: 10 Equations Solved!');
+                }
+                
+                // Level completion badges
+                if (gameState.level >= 2 && !gameState.badges.level1Complete) {
+                    gameState.badges.level1Complete = true;
+                    updateBadge(3);
+                    addJournalEntry('Badge earned: Level 1 Complete!');
+                }
+                
+                if (gameState.level >= 3 && !gameState.badges.level2Complete) {
+                    gameState.badges.level2Complete = true;
+                    updateBadge(4);
+                    addJournalEntry('Badge earned: Level 2 Complete!');
+                }
+                
+                if (gameState.equationsSolved >= 15 && gameState.level === 3 && !gameState.badges.level3Complete) {
+                    gameState.badges.level3Complete = true;
+                    updateBadge(5);
+                    addJournalEntry('Badge earned: Level 3 Complete!');
+                }
+                
+                // Perfect solver: 5 correct answers in a row
+                if (gameState.perfectStreak >= 5 && !gameState.badges.perfectSolver) {
+                    gameState.badges.perfectSolver = true;
+                    updateBadge(7);
+                    addJournalEntry('Badge earned: Perfect Solver - 5 correct answers in a row!');
+                }
+                
+                // Math genius: 90% accuracy after 10 attempts
+                if (gameState.totalAttempts >= 10 && 
+                    (gameState.correctAttempts / gameState.totalAttempts) >= 0.9 && 
+                    !gameState.badges.mathGenius) {
+                    gameState.badges.mathGenius = true;
+                    updateBadge(6);
+                    addJournalEntry('Badge earned: Math Genius - 90% accuracy!');
+                }
+            }
+
+            function updateBadge(index) {
+                const badges = badgesContainer.querySelectorAll('.badge');
+                badges[index].classList.add('earned');
+            }
+
+            function addJournalEntry(text) {
+                const entry = document.createElement('div');
+                entry.className = 'journal-entry bg-white p-3 rounded my-2';
+                
+                const timestamp = document.createElement('div');
+                timestamp.className = 'text-xs text-gray-500';
+                timestamp.textContent = new Date().toLocaleTimeString();
+                
+                const content = document.createElement('div');
+                content.className = 'text-gray-700';
+                content.textContent = text;
+                
+                entry.appendChild(timestamp);
+                entry.appendChild(content);
+                
+                journalContainer.prepend(entry);
+            }
+
+            function updateLevelProgress() {
+                const progressPercentage = ((gameState.equationsSolved % 5) / 5) * 100;
+                levelProgress.style.width = `${progressPercentage}%`;
+            }
+
+            function generateNewEquation() {
+                gameState.currentEquation = generateEquation(gameState.level);
+                equationDisplay.textContent = gameState.currentEquation.display;
+                
+                // Reset UI
+                characterFeedback.textContent = '😐';
+                textFeedback.textContent = 'Drag the slider to find the value of x that makes the equation true.';
+                textFeedback.className = 'ml-4 text-lg font-semibold text-gray-700';
+                
+                // Reset slider to middle position
+                variableSlider.value = 0;
+                sliderValue.textContent = 'x = 0';
+            }
+
+            // Initialize the game
+            function initGame() {
+                levelDisplay.textContent = gameState.level;
+                scoreDisplay.textContent = gameState.score;
+                generateNewEquation();
+                updateLevelProgress();
+            }
+
+            initGame();
+        });
+    </script>
+</body>
+</html>

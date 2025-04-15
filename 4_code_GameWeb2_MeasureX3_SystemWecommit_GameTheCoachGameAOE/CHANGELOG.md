@@ -86,7 +86,7 @@ git tag -a v1.1_MeasureSystemApp -m "
 >> - Khi tắt laptop: Dữ liệu VẪN ĐƯỢC GIỮ LẠI khi khởi động lại. Miễn là không xóa cache trình duyệt"
 ```
 
-post bài: 
+## Post bài Wecommit100x
 ```bash
 [GÓC TÌM ĐỒNG ĐỘI CODE CHUNG 1 CON APP - MEASUREMENT SYSTEM WECOMMIT100X APP]
 
@@ -140,3 +140,59 @@ Link xài thử nội bộ các sếp ạ: https://game-vibe-coding-genspark-ai-
 ```
 
 - Bật check analysis trên vercel
+
+
+## Post bài X3 Năng suất
+```bash
+Xin phép CEO và ace ạ. 
+
+Bên cạnh việc xài App Habit của cộng đồng X3 năng suất Việt Nam mình. 
+Em xài thêm 1 App do bản thân tự phát triển 
+===
+1. Toàn bộ các công việc hàng ngày được đo lường lại và quy ra EXP - MINDSET: KO ĐO LƯỜNG ĐƯỢC, KO THỂ CẢI TIẾN. 
+2. EXP được Game hoá: Mỗi level thì level sau cần EXP gấp 1.5 level trước 
+3. TƯ DUY LÃI KÉP: Càng giữ được streak dài thì điểm kinh nghiệm về sau sẽ được nhân với 1 hệ số để biểu thị mức tăng trưởng lãi kép. 
+```
+0-30 days: 1.0x
+31-90 days: 1.05x
+91-365 days: 1.1x
+1-3 years: 1.2x
+3-5 years: 1.3x
+5-7 years: 1.5x
+7-10 years: 1.8x
+10-15 years: 2.5x
+15+ years: 5.0x
+```
+
+#x3nangsuat
+#doanngoccuong
+#x3habit
+#tool_support
+
+---
+Mong nhận được góc nhìn và feedback từ các huynh đệ ạ. 
+Link xài thử ạ: https://game-vibe-coding-genspark-ai-manus-ai-09042025-qeif.vercel.app/
+
+Em xin phép tag anh Trinh Van Minh nhờ các sếp xài thử ạ
+Em xài cho bản thân là chính và share cho ace ạ!!! Cảm ơn cả nhà đã học ạ!
+```
+
+## a Hiệp ib hỏi genspark => Raise idea cá nhân 
+
+```bash
+Em chào sếp ạ. Em nghĩ là có ạ. Tạo svg và logics đủ chuẩn. Genspark em thấy web nó tạo ra logic thường rất là chuẩn ạ. 
+---
+1. Use case về Web: 
+```
+Tuần vừa rồi em có 1 Idea lờ mờ trong đầu => em quăng qua GenSpark => Ra luôn 1 Web anh ạ. 
+Chuẩn các logic chính: 
+- Thêm Task 
+- Show biểu đồ Dashboard
+- output mặc định là file HTML, tốc độ tạo web siêu nhanh (HTML thui nên là nhanh hơn Lovable). 
+```
+
+- Cùng Prompt trên hôm đó em cũng ném vào Claude3.7 thì gen output ko nổi sếp ạ. 
+- Em gửi link Prompt hôm đấy: https://www.genspark.ai/agents?id=7ca77cbf-2d99-4766-968f-3ba0c7daad24
+- Sau đó em mang về Cursor customize thêm: https://vercel.com/doanngoccuongs-projects/game-vibe-coding-genspark-ai-manus-ai-09042025-qeif  
+- https://game-vibe-coding-genspark-ai-manus-ai-09042025-qeif.vercel.app/
+```
