@@ -150,8 +150,8 @@ Bên cạnh việc xài App Habit của cộng đồng X3 năng suất Việt Na
 Em xài thêm 1 App do bản thân tự phát triển 
 ===
 1. Toàn bộ các công việc hàng ngày được đo lường lại và quy ra EXP - MINDSET: KO ĐO LƯỜNG ĐƯỢC, KO THỂ CẢI TIẾN. 
-2. EXP được Game hoá: Mỗi level thì level sau cần EXP gấp 1.5 level trước 
-3. TƯ DUY LÃI KÉP: Càng giữ được streak dài thì điểm kinh nghiệm về sau sẽ được nhân với 1 hệ số để biểu thị mức tăng trưởng lãi kép. 
+2. TƯ DUY LÃI KÉP và GAME HOÁ: Mỗi level thì level sau cần EXP gấp 1.5 level trước 
+Càng giữ được streak dài thì điểm kinh nghiệm về sau sẽ được nhân với 1 hệ số để biểu thị mức tăng trưởng lãi kép. 
 ```
 0-30 days: 1.0x
 31-90 days: 1.05x
@@ -196,3 +196,53 @@ Chuẩn các logic chính:
 - Sau đó em mang về Cursor customize thêm: https://vercel.com/doanngoccuongs-projects/game-vibe-coding-genspark-ai-manus-ai-09042025-qeif  
 - https://game-vibe-coding-genspark-ai-manus-ai-09042025-qeif.vercel.app/
 ```
+
+## 15/04/2025
+```bash
+Em vừa xem hết video anh share. 
+---
+Về chuyện học hành, trước giờ em cũng có nghe về: để đi nhanh đi xa thì ĐẶT CÂU HỎI WHO - TÌM MENTOR. 
+
+Cơ mà đúng là LẦN ĐẦU TIÊN em được nghe về chiến lược: BỎ BÀI DỄ, BỎ BÀI KHÓ sếp ạ. Trước giờ bản thân đúng là vẫn chưa phân loại ra các nhóm, nên là: lúc thì đứng yên, lúc thì nhìn các bài khó quá mà chưa nhảy vào vọc, hoặc nhảy vào xong lại nhảy ra. 
+
+Em cảm ơn sếp, nếu mà áp dụng thành công thì video này phải định giá tới 50 củ hoặc hơn anh ạ. 🥳
+
+```
+
+Em có 1 chia sẻ như này, hông biết có góp được phần nào vào bức tranh chung không, sếp xem thử ạ. 
+
+Tuần vừa rồi làm Hackathon Game, em có idea về con game Empire of English (Đạo nhái game ĐẾ CHẾ). Đến cuối tuần thì mọi thứ hội tụ lại, em có idea về 1 con App như này. 
+
+App cũng chứa kha khá Mindset của top, em tạm gọi là top 1%. 
+
+1. MỌI THỨ ĐƯỢC ĐO LƯỜNG, KO ĐO LƯỜNG KO THỂ CẢI TIẾN: 
+- Mục tiêu của em là đo lường mọi việc hàng ngày của mình, để biết ngày hôm đó mình có đang làm các việc quan trọng không, hướng vào bức tranh chung không 
+
+2. SYSTEM, XÂY DỰNG MỌI THỨ THEO DẠNG PHÁO ĐÀI ĐỂ MỌI THỨ HỘI TỤ THEO THỜI GIAN: 
+- Mỗi task được gắn các thẻ tags là các mảng em đang follow để hướng tới 1 mục tiêu trong tương lai 
+
+3. LÃI KÉP, STREAK VÀ GAME HOÁ. (Lấy cảm hứng Game hoá từ chính GAME HACKATHON tuần vừa rồi anh tổ chức): 
+- Mỗi việc hàng ngày được quy đổi ra EXP. 
+- Mỗi 1 mảng/ 1 tags học tập như: English, AI Engineering, Networking ... đều được đánh level: level 1: 1000EXP, level2: 1500EXP, ... càng level cao càng cần nhiều kinh nghiệm hơn. 
+- LÃI KÉP, STREAK: Mục tiêu của em là giữ được các chuỗi kinh nghiệm 1 năm - 5 năm - 10 năm - 20 năm
+
+Số EXP thu thập được tính dựa trên streak và lãi kép. 
+
+```
+0-30 days: 1.0x
+31-90 days: 1.05x
+91-365 days: 1.1x
+1-3 years: 1.2x
+3-5 years: 1.3x
+5-7 years: 1.5x
+7-10 years: 1.8x
+10-15 years: 2.5x
+15+ years: 5.0x
+```
+
+
+---
+App này em lên idea để dành cho việc thực hiện XÂY DỰNG TÍCH LUỸ CHO BẢN THÂN. 
+Em nghĩ là có 1 vài điểm có thể mapping với bức tranh to của Step Up. 
+
+1. Toàn bộ bức tranh học tập: Toán, Tiếng anh, Lý, Hoá: 
