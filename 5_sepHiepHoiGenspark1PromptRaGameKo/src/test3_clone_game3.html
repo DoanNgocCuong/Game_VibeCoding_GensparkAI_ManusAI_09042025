@@ -1,0 +1,3290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quest: Fraction Kingdom</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --background: #EFF6FF;
+            --card: #FFFFFF;
+            --text: #1F2937;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--background);
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .game-title {
+            font-family: 'Bubblegum Sans', cursive;
+        }
+        
+        .character {
+            transition: transform 0.4s ease-in-out;
+            will-change: transform;
+        }
+        
+        .character:hover {
+            transform: scale(1.1) translateY(-10px);
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        .bounce-effect {
+            animation: bounce 1s ease infinite;
+        }
+
+        .star {
+            position: absolute;
+            background-color: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: twinkle 3s infinite;
+            opacity: 0.8;
+        }
+
+        .fraction-part {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+
+        .fraction-part:active {
+            cursor: grabbing;
+        }
+
+        .fraction-slot {
+            transition: all 0.3s ease;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .fraction-slot.highlight {
+            border: 2px dashed var(--primary);
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .fraction-slot.correct {
+            border: 2px solid var(--success);
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .fraction-slot.incorrect {
+            border: 2px solid var(--danger);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .game-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 1rem;
+            background-color: var(--card);
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .game-button {
+            transition: all 0.2s ease;
+            transform-origin: center;
+        }
+
+        .game-button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-button:active {
+            transform: scale(0.95);
+        }
+
+        .dialog-box {
+            border-radius: 1rem;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 90%;
+            width: 500px;
+            z-index: 50;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .racing-track {
+            height: 400px;
+            background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+
+        .racing-car {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            transition: left 0.5s ease;
+        }
+
+        .car-body {
+            width: 100%;
+            height: 60%;
+            background-color: var(--primary);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .car-top {
+            width: 60%;
+            height: 50%;
+            background-color: var(--accent);
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            top: -50%;
+            left: 20%;
+        }
+
+        .wheel {
+            width: 20px;
+            height: 20px;
+            background-color: #111827;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -10px;
+        }
+
+        .wheel-front {
+            right: 10px;
+        }
+
+        .wheel-back {
+            left: 10px;
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 0;
+            height: 100%;
+            width: 10px;
+            background: repeating-linear-gradient(
+                to bottom,
+                black 0px,
+                black 20px,
+                white 20px,
+                white 40px
+            );
+        }
+
+        .circle-slice {
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        .timer-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 5px;
+            transition: width 0.1s linear;
+        }
+
+        .flying-coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: gold;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #b45309;
+            font-weight: bold;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .puzzle-piece {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .puzzle-piece:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        .puzzle-slot {
+            transition: all 0.2s ease;
+            background-color: rgba(203, 213, 225, 0.3);
+            border: 2px dashed #cbd5e1;
+        }
+
+        .puzzle-slot.highlight {
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 2px dashed var(--primary);
+        }
+
+        .puzzle-slot.correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+        }
+
+        .match-card {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            height: 120px;
+            cursor: pointer;
+        }
+
+        .match-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .match-card.flipped .match-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .match-card-front, .match-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .match-card-front {
+            background-color: var(--primary);
+        }
+
+        .match-card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .wiggle {
+            animation: wiggle 0.5s ease-in-out;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 1000;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { 
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.3s ease-in-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .circle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .pie-slice {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+            transform-origin: center;
+        }
+
+        .inventory-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid rgba(79, 70, 229, 0.1);
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 640px) {
+            .game-card {
+                border-radius: 0.75rem;
+            }
+            
+            .racing-track {
+                height: 300px;
+            }
+            
+            .racing-car {
+                width: 60px;
+                height: 30px;
+            }
+            
+            .wheel {
+                width: 15px;
+                height: 15px;
+                bottom: -7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio Elements (will be played on user interaction) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/music/TwinkleStarLoop.mp3" type="audio/mp3">
+    </audio>
+    <audio id="clickSound" preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/sfx/select.mp3" type="audio/mp3">
+    </audio>
+    <audio id="correctSound" preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/sfx/pickup.mp3" type="audio/mp3">
+    </audio>
+    <audio id="wrongSound" preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/sfx/hit.mp3" type="audio/mp3">
+    </audio>
+    <audio id="winSound" preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/sfx/victory.mp3" type="audio/mp3">
+    </audio>
+    <audio id="coinSound" preload="auto">
+        <source src="https://cdn.jsdelivr.net/gh/nazimboudeffa/gamecodeur-assets/audios/sfx/coin.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+        <div class="spinner mb-4"></div>
+        <h2 class="text-xl font-bold text-gray-700">Loading Fraction Kingdom...</h2>
+        <div class="mt-4 w-64">
+            <div class="progress-bar">
+                <div id="loadingBar" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="hidden w-full h-full relative">
+        <!-- Floating Stars Background -->
+        <div id="starsContainer" class="fixed inset-0 pointer-events-none"></div>
+
+        <!-- Title Screen -->
+        <div id="titleScreen" class="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-blue-400 to-purple-500 text-white">
+            <h1 class="game-title text-6xl md:text-7xl mb-4 text-yellow-300 drop-shadow-lg animate-float">Math Quest</h1>
+            <h2 class="game-title text-4xl md:text-5xl mb-8 text-white drop-shadow-lg">Fraction Kingdom</h2>
+            
+            <div class="characters-container flex justify-center space-x-4 md:space-x-8 mb-8">
+                <div class="character flex flex-col items-center">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-600 border-4 border-white flex items-center justify-center text-white text-3xl shine-effect">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <p class="mt-2 font-bold">Dividy</p>
+                </div>
+                <div class="character flex flex-col items-center">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-pink-500 border-4 border-white flex items-center justify-center text-white text-3xl shine-effect">
+                        <i class="fas fa-hat-wizard"></i>
+                    </div>
+                    <p class="mt-2 font-bold">Fracto</p>
+                </div>
+                <div class="character flex flex-col items-center">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-yellow-500 border-4 border-white flex items-center justify-center text-white text-3xl shine-effect">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <p class="mt-2 font-bold">Queen Equalia</p>
+                </div>
+            </div>
+
+            <button id="startButton" class="game-button bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transition-all">
+                Start Adventure
+            </button>
+            
+            <button id="howToPlayButton" class="game-button mt-4 bg-white bg-opacity-30 hover:bg-opacity-40 text-white font-bold py-2 px-6 rounded-full shadow-md transition-all">
+                How to Play
+            </button>
+        </div>
+
+        <!-- Story Intro Screen -->
+        <div id="storyScreen" class="fixed inset-0 bg-gray-900 bg-opacity-95 flex flex-col items-center justify-center text-white hidden">
+            <div class="max-w-3xl p-4 md:p-8 text-center">
+                <h2 class="game-title text-4xl mb-4">The Kingdom's Crisis</h2>
+                <p class="text-lg md:text-xl mb-6">
+                    Welcome to the Fraction Kingdom, a magical land where numbers and fractions bring harmony and balance.
+                </p>
+                <p class="text-lg md:text-xl mb-6">
+                    But disaster has struck! The evil wizard Denominator has stolen the sacred Fraction Crystals and scattered them across the realm.
+                </p>
+                <p class="text-lg md:text-xl mb-6">
+                    Queen Equalia has summoned you, along with her trusted advisors Dividy and Fracto, to restore balance by mastering fraction skills and recovering the crystals.
+                </p>
+                <p class="text-lg md:text-xl mb-8">
+                    Can you help save the Fraction Kingdom?
+                </p>
+                <button id="continueToMapButton" class="game-button bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg">
+                    Continue
+                </button>
+            </div>
+        </div>
+
+        <!-- Map Screen -->
+        <div id="mapScreen" class="fixed inset-0 bg-blue-100 hidden">
+            <div class="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-white bg-opacity-80 shadow-md">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
+                        <i class="fas fa-coins text-yellow-900"></i>
+                    </div>
+                    <span id="coinCounter" class="font-bold">0</span>
+                </div>
+                
+                <h2 class="game-title text-2xl text-indigo-700">Fraction Kingdom</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <button id="inventoryButton" class="game-button bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-backpack mr-1"></i> Inventory
+                    </button>
+                    <button id="settingsButton" class="game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-20 pb-6 px-4 h-full overflow-y-auto">
+                <div class="map-content relative max-w-4xl mx-auto">
+                    <!-- Path and Locations -->
+                    <div class="path-container relative">
+                        <div class="map-path absolute top-0 left-1/2 w-4 bg-yellow-800 rounded-full transform -translate-x-1/2" style="height: 95%"></div>
+                        
+                        <div class="locations-container relative flex flex-col items-center space-y-24 py-6">
+                            <!-- Location 1: Fraction Bridge -->
+                            <div class="location-item w-full">
+                                <div class="flex flex-col items-center">
+                                    <div class="map-marker w-16 h-16 rounded-full bg-green-500 border-4 border-white flex items-center justify-center text-white text-3xl shadow-lg mb-4 z-10">
+                                        <i class="fas fa-dice-one"></i>
+                                    </div>
+                                    <div class="game-card w-full md:w-4/5 p-4" data-game="matching">
+                                        <div class="flex flex-col md:flex-row">
+                                            <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                                                <div class="rounded-lg bg-green-100 p-4 flex items-center justify-center h-full">
+                                                    <div class="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center text-white text-4xl shine-effect">
+                                                        <i class="fas fa-equals"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-full md:w-2/3 md:pl-4">
+                                                <h3 class="game-title text-xl text-green-700 mb-2">Fraction Matching</h3>
+                                                <p class="text-gray-600 mb-4">Match equivalent fractions to rebuild the magical bridge. Find pairs of fractions that have the same value!</p>
+                                                <button class="play-button game-button bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg">
+                                                    <i class="fas fa-play mr-1"></i> Play
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Location 2: Fraction Builder -->
+                            <div class="location-item w-full">
+                                <div class="flex flex-col items-center">
+                                    <div class="map-marker w-16 h-16 rounded-full bg-blue-500 border-4 border-white flex items-center justify-center text-white text-3xl shadow-lg mb-4 z-10">
+                                        <i class="fas fa-dice-two"></i>
+                                    </div>
+                                    <div class="game-card w-full md:w-4/5 p-4" data-game="builder">
+                                        <div class="flex flex-col md:flex-row">
+                                            <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                                                <div class="rounded-lg bg-blue-100 p-4 flex items-center justify-center h-full">
+                                                    <div class="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-4xl shine-effect">
+                                                        <i class="fas fa-puzzle-piece"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-full md:w-2/3 md:pl-4">
+                                                <h3 class="game-title text-xl text-blue-700 mb-2">Fraction Builder</h3>
+                                                <p class="text-gray-600 mb-4">Build fractions by dragging the numerator and denominator. Create fractions that match the given values!</p>
+                                                <button class="play-button game-button bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">
+                                                    <i class="fas fa-play mr-1"></i> Play
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Location 3: Fraction Puzzles -->
+                            <div class="location-item w-full">
+                                <div class="flex flex-col items-center">
+                                    <div class="map-marker w-16 h-16 rounded-full bg-purple-500 border-4 border-white flex items-center justify-center text-white text-3xl shadow-lg mb-4 z-10">
+                                        <i class="fas fa-dice-three"></i>
+                                    </div>
+                                    <div class="game-card w-full md:w-4/5 p-4" data-game="puzzles">
+                                        <div class="flex flex-col md:flex-row">
+                                            <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                                                <div class="rounded-lg bg-purple-100 p-4 flex items-center justify-center h-full">
+                                                    <div class="w-20 h-20 rounded-full bg-purple-500 flex items-center justify-center text-white text-4xl shine-effect">
+                                                        <i class="fas fa-shapes"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-full md:w-2/3 md:pl-4">
+                                                <h3 class="game-title text-xl text-purple-700 mb-2">Fraction Puzzles</h3>
+                                                <p class="text-gray-600 mb-4">Solve fraction puzzles by placing the missing pieces in the correct spots. Complete the equation!</p>
+                                                <button class="play-button game-button bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg">
+                                                    <i class="fas fa-play mr-1"></i> Play
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Location 4: Fraction Racing -->
+                            <div class="location-item w-full">
+                                <div class="flex flex-col items-center">
+                                    <div class="map-marker w-16 h-16 rounded-full bg-red-500 border-4 border-white flex items-center justify-center text-white text-3xl shadow-lg mb-4 z-10">
+                                        <i class="fas fa-dice-four"></i>
+                                    </div>
+                                    <div class="game-card w-full md:w-4/5 p-4" data-game="racing">
+                                        <div class="flex flex-col md:flex-row">
+                                            <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                                                <div class="rounded-lg bg-red-100 p-4 flex items-center justify-center h-full">
+                                                    <div class="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center text-white text-4xl shine-effect">
+                                                        <i class="fas fa-car"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-full md:w-2/3 md:pl-4">
+                                                <h3 class="game-title text-xl text-red-700 mb-2">Fraction Racing</h3>
+                                                <p class="text-gray-600 mb-4">Race to the finish line by comparing fractions. Choose the larger fraction to move your car forward!</p>
+                                                <button class="play-button game-button bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg">
+                                                    <i class="fas fa-play mr-1"></i> Play
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Screen -->
+        <div id="inventoryScreen" class="fixed inset-0 bg-gray-900 bg-opacity-80 z-40 flex items-center justify-center hidden">
+            <div class="dialog-box w-5/6 max-w-3xl bg-white rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="game-title text-2xl text-indigo-700">Your Inventory</h2>
+                    <button id="closeInventoryButton" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                            <i class="fas fa-coins text-yellow-900"></i>
+                        </div>
+                        <span id="inventoryCoinCounter" class="font-bold">0</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="inventory-item bg-blue-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-sm font-bold text-blue-700">Blue Crystal</p>
+                        <p id="blueCrystalCount" class="text-xs text-blue-500">0/1</p>
+                    </div>
+                    
+                    <div class="inventory-item bg-green-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-sm font-bold text-green-700">Green Crystal</p>
+                        <p id="greenCrystalCount" class="text-xs text-green-500">0/1</p>
+                    </div>
+                    
+                    <div class="inventory-item bg-purple-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-sm font-bold text-purple-700">Purple Crystal</p>
+                        <p id="purpleCrystalCount" class="text-xs text-purple-500">0/1</p>
+                    </div>
+                    
+                    <div class="inventory-item bg-red-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-sm font-bold text-red-700">Red Crystal</p>
+                        <p id="redCrystalCount" class="text-xs text-red-500">0/1</p>
+                    </div>
+                    
+                    <div class="inventory-item bg-yellow-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-scroll"></i>
+                        </div>
+                        <p class="text-sm font-bold text-yellow-700">Hint Scroll</p>
+                        <p id="hintScrollCount" class="text-xs text-yellow-500">0/3</p>
+                    </div>
+                    
+                    <div class="inventory-item bg-pink-100 p-3 rounded-lg flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-white mb-2">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <p class="text-sm font-bold text-pink-700">Extra Life</p>
+                        <p id="extraLifeCount" class="text-xs text-pink-500">0/3</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="font-bold text-lg mb-2">Shop</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="buyHintScroll" class="game-button flex items-center justify-between bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold py-2 px-4 rounded-lg">
+                            <span><i class="fas fa-scroll mr-2"></i> Buy Hint Scroll</span>
+                            <span class="flex items-center">50 <i class="fas fa-coins ml-1 text-yellow-600"></i></span>
+                        </button>
+                        
+                        <button id="buyExtraLife" class="game-button flex items-center justify-between bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold py-2 px-4 rounded-lg">
+                            <span><i class="fas fa-heart mr-2"></i> Buy Extra Life</span>
+                            <span class="flex items-center">100 <i class="fas fa-coins ml-1 text-yellow-600"></i></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="fixed inset-0 bg-gray-900 bg-opacity-80 z-40 flex items-center justify-center hidden">
+            <div class="dialog-box w-5/6 max-w-md bg-white rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="game-title text-2xl text-gray-700">Settings</h2>
+                    <button id="closeSettingsButton" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold">Music</span>
+                        <label class="flex items-center cursor-pointer">
+                            <div class="relative">
+                                <input id="musicToggle" type="checkbox" class="sr-only" checked>
+                                <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold">Sound Effects</span>
+                        <label class="flex items-center cursor-pointer">
+                            <div class="relative">
+                                <input id="sfxToggle" type="checkbox" class="sr-only" checked>
+                                <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <h3 class="font-bold mb-1">Game Progress</h3>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500 mb-2">Total Crystals Collected:</p>
+                        <div class="flex justify-center space-x-2">
+                            <div id="progressCrystal1" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-gem text-gray-400"></i>
+                            </div>
+                            <div id="progressCrystal2" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-gem text-gray-400"></i>
+                            </div>
+                            <div id="progressCrystal3" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-gem text-gray-400"></i>
+                            </div>
+                            <div id="progressCrystal4" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-gem text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="resetProgressButton" class="game-button bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg mt-2">
+                        Reset All Progress
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- How To Play Screen -->
+        <div id="howToPlayScreen" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-40 flex items-center justify-center hidden">
+            <div class="dialog-box w-5/6 max-w-3xl bg-white rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="game-title text-2xl text-indigo-700">How to Play</h2>
+                    <button id="closeHowToPlayButton" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-700 mb-2">
+                            <i class="fas fa-equals mr-2"></i> Fraction Matching
+                        </h3>
+                        <p>Find pairs of equivalent fractions by flipping the cards. Match fractions that have the same value, like 1/2 and 2/4.</p>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-700 mb-2">
+                            <i class="fas fa-puzzle-piece mr-2"></i> Fraction Builder
+                        </h3>
+                        <p>Drag and drop numerators and denominators to create fractions that match the target value shown on the screen.</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-700 mb-2">
+                            <i class="fas fa-shapes mr-2"></i> Fraction Puzzles
+                        </h3>
+                        <p>Complete fraction equations by placing the missing pieces in the correct positions. Solve the puzzle before time runs out!</p>
+                    </div>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-red-700 mb-2">
+                            <i class="fas fa-car mr-2"></i> Fraction Racing
+                        </h3>
+                        <p>Compare fractions and select the larger one to move your car forward. Race against time to reach the finish line!</p>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-700 mb-2">
+                            <i class="fas fa-coins mr-2"></i> Rewards & Items
+                        </h3>
+                        <p>Win coins by completing games. Use coins to buy hint scrolls and extra lives. Collect all four fraction crystals to save the kingdom!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fraction Matching Game -->
+        <div id="matchingGame" class="fixed inset-0 bg-green-50 hidden">
+            <div class="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-white shadow-md">
+                <button class="back-button game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-lg">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </button>
+                
+                <h2 class="game-title text-xl text-green-700">Fraction Matching</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <button class="hint-button game-button bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-scroll mr-1"></i> Hint <span class="hint-count">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pt-20 pb-6 px-4 h-full overflow-y-auto">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-hat-wizard"></i>
+                            </div>
+                            <div class="speech-bubble">
+                                <p id="matchingInstruction" class="text-gray-700">Find pairs of equivalent fractions! Match the cards with the same value.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span id="matchingLives" class="font-bold">3</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-stopwatch text-blue-500"></i>
+                                <span id="matchingTimer" class="font-bold">60</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span id="matchingPairsFound" class="font-bold">0/6</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="matchingGrid" class="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                        <!-- Cards will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fraction Builder Game -->
+        <div id="builderGame" class="fixed inset-0 bg-blue-50 hidden">
+            <div class="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-white shadow-md">
+                <button class="back-button game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-lg">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </button>
+                
+                <h2 class="game-title text-xl text-blue-700">Fraction Builder</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <button class="hint-button game-button bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-scroll mr-1"></i> Hint <span class="hint-count">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pt-20 pb-6 px-4 h-full overflow-y-auto">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-dragon"></i>
+                            </div>
+                            <div class="speech-bubble">
+                                <p id="builderInstruction" class="text-gray-700">Build the fraction that matches the value shown. Drag numbers to the correct positions!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span id="builderLives" class="font-bold">3</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-stopwatch text-blue-500"></i>
+                                <span id="builderTimer" class="font-bold">60</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span id="builderScore" class="font-bold">0/10</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl shadow-md">
+                            <h3 class="text-center font-bold text-blue-700 mb-2">Target Value</h3>
+                            <div id="builderTarget" class="text-center text-4xl font-bold text-indigo-700">0.5</div>
+                            
+                            <div class="mt-4">
+                                <div class="circle-container mx-auto">
+                                    <div id="builderVisualization" class="w-full h-full rounded-full border-2 border-gray-300 overflow-hidden">
+                                        <!-- Visualization will be dynamically generated -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-xl shadow-md">
+                            <h3 class="text-center font-bold text-blue-700 mb-2">Build Your Fraction</h3>
+                            
+                            <div class="flex justify-center items-center mb-6">
+                                <div id="numeratorSlot" class="fraction-slot w-16 h-16 rounded-lg flex items-center justify-center text-2xl font-bold" data-type="numerator"></div>
+                                <div class="w-16 h-1 bg-black mx-1"></div>
+                                <div id="denominatorSlot" class="fraction-slot w-16 h-16 rounded-lg flex items-center justify-center text-2xl font-bold" data-type="denominator"></div>
+                                <div class="mx-4 text-2xl">=</div>
+                                <div id="fractionValue" class="text-2xl font-bold text-blue-700">?</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-5 gap-2 mt-4" id="numberOptions">
+                                <!-- Number options will be dynamically generated -->
+                            </div>
+                            
+                            <div class="mt-6 text-center">
+                                <button id="checkFractionButton" class="game-button bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg">
+                                    Check
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fraction Puzzles Game -->
+        <div id="puzzlesGame" class="fixed inset-0 bg-purple-50 hidden">
+            <div class="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-white shadow-md">
+                <button class="back-button game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-lg">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </button>
+                
+                <h2 class="game-title text-xl text-purple-700">Fraction Puzzles</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <button class="hint-button game-button bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-scroll mr-1"></i> Hint <span class="hint-count">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pt-20 pb-6 px-4 h-full overflow-y-auto">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="speech-bubble">
+                                <p id="puzzlesInstruction" class="text-gray-700">Complete the fraction equation by placing the missing pieces in the correct spots!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span id="puzzlesLives" class="font-bold">3</span>
+                            </div>
+                            <div>
+                                <div class="timer-bar w-32">
+                                    <div id="puzzlesTimerBar" class="timer-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span id="puzzlesScore" class="font-bold">0/8</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                        <div id="puzzleEquation" class="flex items-center justify-center text-2xl md:text-3xl font-bold space-x-2 md:space-x-4 mb-8">
+                            <!-- Puzzle equation will be dynamically generated -->
+                        </div>
+                        
+                        <div id="puzzlePieces" class="grid grid-cols-4 md:grid-cols-6 gap-2 md:gap-4">
+                            <!-- Puzzle pieces will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fraction Racing Game -->
+        <div id="racingGame" class="fixed inset-0 bg-red-50 hidden">
+            <div class="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-white shadow-md">
+                <button class="back-button game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-lg">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </button>
+                
+                <h2 class="game-title text-xl text-red-700">Fraction Racing</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <button class="hint-button game-button bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-1 px-3 rounded-lg">
+                        <i class="fas fa-scroll mr-1"></i> Hint <span class="hint-count">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pt-20 pb-6 px-4 h-full overflow-y-auto">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-dragon"></i>
+                            </div>
+                            <div class="speech-bubble">
+                                <p id="racingInstruction" class="text-gray-700">Choose the larger fraction to move your car forward! Race to the finish line!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-flag-checkered text-black"></i>
+                                <span id="racingProgress" class="font-bold">0/10</span>
+                            </div>
+                            <div>
+                                <div class="timer-bar w-32">
+                                    <div id="racingTimerBar" class="timer-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="racing-track mb-6 relative">
+                        <div class="finish-line"></div>
+                        <div id="playerCar" class="racing-car" style="bottom: 40px; left: 10%;">
+                            <div class="car-top"></div>
+                            <div class="car-body">
+                                <div class="wheel wheel-front"></div>
+                                <div class="wheel wheel-back"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button id="fraction1" class="game-button bg-white hover:bg-gray-100 border-2 border-red-500 text-red-700 font-bold py-4 rounded-xl text-2xl"></button>
+                        <button id="fraction2" class="game-button bg-white hover:bg-gray-100 border-2 border-red-500 text-red-700 font-bold py-4 rounded-xl text-2xl"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Dialog -->
+        <div id="resultDialog" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+            <div class="dialog-box scale-in">
+                <h2 id="resultTitle" class="game-title text-3xl text-center mb-4 text-indigo-600">Great Job!</h2>
+                
+                <div class="flex flex-col items-center mb-6">
+                    <div id="resultIcon" class="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl mb-4 animate-bounce">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <p id="resultMessage" class="text-xl text-center text-gray-700">You've completed the level!</p>
+                    
+                    <div class="mt-4 flex items-center space-x-6">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white mb-2">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <span id="rewardCoins" class="font-bold text-yellow-700">+50</span>
+                        </div>
+                        
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white mb-2">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span id="rewardStars" class="font-bold text-indigo-700">★★★</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button id="resultRetryButton" class="game-button bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg">
+                        <i class="fas fa-redo mr-1"></i> Play Again
+                    </button>
+                    
+                    <button id="resultNextButton" class="game-button bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg">
+                        Continue <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crystal Found Dialog -->
+        <div id="crystalDialog" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+            <div class="dialog-box text-center scale-in">
+                <h2 class="game-title text-3xl mb-4 text-purple-600">Crystal Found!</h2>
+                
+                <div class="flex flex-col items-center mb-6">
+                    <div id="crystalIcon" class="w-24 h-24 rounded-full bg-purple-500 flex items-center justify-center text-white text-4xl mb-4 animate-float shine-effect">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    
+                    <p id="crystalMessage" class="text-xl text-gray-700">You've found the Purple Fraction Crystal!</p>
+                    
+                    <p class="mt-2 text-gray-600">This crystal has the power of addition and subtraction of fractions.</p>
+                </div>
+                
+                <button id="crystalContinueButton" class="game-button bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-8 rounded-lg">
+                    Amazing!
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Completion Dialog -->
+        <div id="completionDialog" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 hidden">
+            <div class="dialog-box text-center scale-in max-w-2xl">
+                <h2 class="game-title text-4xl mb-2 text-yellow-500">Congratulations!</h2>
+                <h3 class="game-title text-2xl mb-6 text-white">You've Saved the Fraction Kingdom!</h3>
+                
+                <div class="flex flex-wrap justify-center mb-6 space-x-4">
+                    <div class="flex flex-col items-center m-2">
+                        <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl mb-2 animate-float shine-effect">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-blue-500 font-bold">Blue</p>
+                    </div>
+                    <div class="flex flex-col items-center m-2">
+                        <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-white text-2xl mb-2 animate-float shine-effect">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-green-500 font-bold">Green</p>
+                    </div>
+                    <div class="flex flex-col items-center m-2">
+                        <div class="w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center text-white text-2xl mb-2 animate-float shine-effect">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-purple-500 font-bold">Purple</p>
+                    </div>
+                    <div class="flex flex-col items-center m-2">
+                        <div class="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center text-white text-2xl mb-2 animate-float shine-effect">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <p class="text-red-500 font-bold">Red</p>
+                    </div>
+                </div>
+                
+                <p class="text-xl text-gray-300 mb-6">
+                    With all four Fraction Crystals returned to the royal crown, balance has been restored to the kingdom. Queen Equalia is forever grateful for your mastery of fractions!
+                </p>
+                
+                <div class="mb-6">
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="text-white font-bold mb-2">Final Stats</h3>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <p class="text-gray-400">Total Score</p>
+                                <p id="finalScore" class="text-2xl text-white font-bold">1250</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Puzzles Solved</p>
+                                <p id="puzzlesSolved" class="text-2xl text-white font-bold">24</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Time Played</p>
+                                <p id="timePlayed" class="text-2xl text-white font-bold">12:45</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button id="playAgainButton" class="game-button bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg">
+                        Play Again
+                    </button>
+                    
+                    <button id="shareFriendButton" class="game-button bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg">
+                        <i class="fas fa-share-alt mr-1"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            coins: 0,
+            inventory: {
+                blueCrystal: false,
+                greenCrystal: false,
+                purpleCrystal: false,
+                redCrystal: false,
+                hintScrolls: 0,
+                extraLives: 0
+            },
+            settings: {
+                music: true,
+                sfx: true
+            },
+            progress: {
+                totalScore: 0,
+                puzzlesSolved: 0,
+                startTime: null,
+                matchingCompleted: false,
+                builderCompleted: false,
+                puzzlesCompleted: false,
+                racingCompleted: false
+            },
+            currentScreen: null,
+            currentGame: null,
+            currentLevel: 1,
+            draggedElement: null
+        };
+
+        // Audio elements
+        const bgMusic = document.getElementById('bgMusic');
+        const clickSound = document.getElementById('clickSound');
+        const correctSound = document.getElementById('correctSound');
+        const wrongSound = document.getElementById('wrongSound');
+        const winSound = document.getElementById('winSound');
+        const coinSound = document.getElementById('coinSound');
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingBar = document.getElementById('loadingBar');
+        const gameContainer = document.getElementById('gameContainer');
+        const titleScreen = document.getElementById('titleScreen');
+        const storyScreen = document.getElementById('storyScreen');
+        const mapScreen = document.getElementById('mapScreen');
+        const inventoryScreen = document.getElementById('inventoryScreen');
+        const settingsScreen = document.getElementById('settingsScreen');
+        const howToPlayScreen = document.getElementById('howToPlayScreen');
+        const matchingGame = document.getElementById('matchingGame');
+        const builderGame = document.getElementById('builderGame');
+        const puzzlesGame = document.getElementById('puzzlesGame');
+        const racingGame = document.getElementById('racingGame');
+        const resultDialog = document.getElementById('resultDialog');
+        const crystalDialog = document.getElementById('crystalDialog');
+        const completionDialog = document.getElementById('completionDialog');
+
+        // Buttons
+        const startButton = document.getElementById('startButton');
+        const howToPlayButton = document.getElementById('howToPlayButton');
+        const continueToMapButton = document.getElementById('continueToMapButton');
+        const inventoryButton = document.getElementById('inventoryButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const closeInventoryButton = document.getElementById('closeInventoryButton');
+        const closeSettingsButton = document.getElementById('closeSettingsButton');
+        const closeHowToPlayButton = document.getElementById('closeHowToPlayButton');
+        const buyHintScroll = document.getElementById('buyHintScroll');
+        const buyExtraLife = document.getElementById('buyExtraLife');
+        const resetProgressButton = document.getElementById('resetProgressButton');
+        const resultRetryButton = document.getElementById('resultRetryButton');
+        const resultNextButton = document.getElementById('resultNextButton');
+        const crystalContinueButton = document.getElementById('crystalContinueButton');
+        const playAgainButton = document.getElementById('playAgainButton');
+        const shareFriendButton = document.getElementById('shareFriendButton');
+        const backButtons = document.querySelectorAll('.back-button');
+        const hintButtons = document.querySelectorAll('.hint-button');
+        const playButtons = document.querySelectorAll('.play-button');
+
+        // Initialize the game
+        window.onload = function() {
+            initializeGame();
+        };
+
+        // Initialize Game
+        function initializeGame() {
+            // Load saved data if exists
+            loadGameState();
+            
+            // Simulate loading process
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += 5;
+                loadingBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    
+                    // Complete loading
+                    setTimeout(() => {
+                        loadingScreen.classList.add('fade-out');
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            gameContainer.classList.remove('hidden');
+                            showScreen(titleScreen);
+                        }, 500);
+                    }, 500);
+                }
+            }, 100);
+
+            // Setup stars background
+            createStars();
+            
+            // Update UI with loaded data
+            updateInventoryUI();
+            updateCoinCounter();
+            updateProgressUI();
+            
+            // Set the game start time if not set
+            if (!gameState.progress.startTime) {
+                gameState.progress.startTime = Date.now();
+            }
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+
+        // Load saved game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('fractionKingdomState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                Object.assign(gameState, parsedState);
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('fractionKingdomState', JSON.stringify(gameState));
+        }
+
+        // Reset game progress
+        function resetGameProgress() {
+            gameState.coins = 0;
+            gameState.inventory = {
+                blueCrystal: false,
+                greenCrystal: false,
+                purpleCrystal: false,
+                redCrystal: false,
+                hintScrolls: 0,
+                extraLives: 0
+            };
+            gameState.progress = {
+                totalScore: 0,
+                puzzlesSolved: 0,
+                startTime: Date.now(),
+                matchingCompleted: false,
+                builderCompleted: false,
+                puzzlesCompleted: false,
+                racingCompleted: false
+            };
+            
+            saveGameState();
+            updateInventoryUI();
+            updateCoinCounter();
+            updateProgressUI();
+            
+            playSound(clickSound);
+            showMessage("Progress Reset", "Your game progress has been reset.");
+        }
+
+        // Create stars for background
+        function createStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            starsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const size = Math.random() * 15 + 5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Main navigation buttons
+            startButton.addEventListener('click', () => {
+                playSound(clickSound);
+                showScreen(storyScreen);
+            });
+            
+            howToPlayButton.addEventListener('click', () => {
+                playSound(clickSound);
+                showHowToPlay();
+            });
+            
+            continueToMapButton.addEventListener('click', () => {
+                playSound(clickSound);
+                showScreen(mapScreen);
+                startBackgroundMusic();
+            });
+            
+            inventoryButton.addEventListener('click', () => {
+                playSound(clickSound);
+                showInventory();
+            });
+            
+            settingsButton.addEventListener('click', () => {
+                playSound(clickSound);
+                showSettings();
+            });
+            
+            closeInventoryButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideInventory();
+            });
+            
+            closeSettingsButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideSettings();
+            });
+            
+            closeHowToPlayButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideHowToPlay();
+            });
+            
+            // Shop buttons
+            buyHintScroll.addEventListener('click', () => {
+                buyItem('hintScroll', 50);
+            });
+            
+            buyExtraLife.addEventListener('click', () => {
+                buyItem('extraLife', 100);
+            });
+            
+            resetProgressButton.addEventListener('click', () => {
+                if (confirm("Are you sure you want to reset all progress? This cannot be undone.")) {
+                    resetGameProgress();
+                }
+            });
+            
+            // Game selection
+            playButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    playSound(clickSound);
+                    const gameCard = e.target.closest('.game-card');
+                    if (gameCard) {
+                        const gameType = gameCard.dataset.game;
+                        startGame(gameType);
+                    }
+                });
+            });
+            
+            // Back buttons
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    playSound(clickSound);
+                    returnToMap();
+                });
+            });
+            
+            // Hint buttons
+            hintButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    useHint();
+                });
+            });
+            
+            // Settings toggles
+            document.getElementById('musicToggle').addEventListener('change', (e) => {
+                gameState.settings.music = e.target.checked;
+                saveGameState();
+                if (gameState.settings.music) {
+                    bgMusic.play();
+                } else {
+                    bgMusic.pause();
+                }
+                updateToggleUI();
+            });
+            
+            document.getElementById('sfxToggle').addEventListener('change', (e) => {
+                gameState.settings.sfx = e.target.checked;
+                saveGameState();
+                updateToggleUI();
+            });
+            
+            // Result dialog buttons
+            resultRetryButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideResultDialog();
+                startGame(gameState.currentGame);
+            });
+            
+            resultNextButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideResultDialog();
+                returnToMap();
+                
+                // Check if crystal should be awarded
+                checkCrystalReward();
+            });
+            
+            crystalContinueButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideCrystalDialog();
+                
+                // Check if all crystals are collected
+                checkGameCompletion();
+            });
+            
+            playAgainButton.addEventListener('click', () => {
+                playSound(clickSound);
+                hideCompletionDialog();
+                resetGameProgress();
+                showScreen(titleScreen);
+            });
+            
+            shareFriendButton.addEventListener('click', () => {
+                playSound(clickSound);
+                alert("Share feature would be implemented in a real game!");
+            });
+            
+            // Fraction builder specific
+            document.getElementById('checkFractionButton').addEventListener('click', () => {
+                checkBuilderFraction();
+            });
+            
+            // Racing game specific
+            document.getElementById('fraction1').addEventListener('click', () => {
+                checkRacingAnswer(0);
+            });
+            
+            document.getElementById('fraction2').addEventListener('click', () => {
+                checkRacingAnswer(1);
+            });
+
+            // Setup toggle visualization
+            updateToggleUI();
+        }
+
+        // Update toggle UI based on settings
+        function updateToggleUI() {
+            const musicToggle = document.getElementById('musicToggle');
+            const sfxToggle = document.getElementById('sfxToggle');
+            
+            musicToggle.checked = gameState.settings.music;
+            sfxToggle.checked = gameState.settings.sfx;
+            
+            // Update the toggle appearance
+            document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+                const dot = toggle.nextElementSibling.nextElementSibling;
+                if (toggle.checked) {
+                    toggle.nextElementSibling.classList.add('bg-indigo-600');
+                    toggle.nextElementSibling.classList.remove('bg-gray-300');
+                    dot.style.transform = 'translateX(100%)';
+                } else {
+                    toggle.nextElementSibling.classList.remove('bg-indigo-600');
+                    toggle.nextElementSibling.classList.add('bg-gray-300');
+                    dot.style.transform = 'translateX(0)';
+                }
+            });
+        }
+
+        // Show a specific screen
+        function showScreen(screen) {
+            // Hide all screens first
+            const screens = [
+                titleScreen, storyScreen, mapScreen, matchingGame, 
+                builderGame, puzzlesGame, racingGame
+            ];
+            
+            screens.forEach(s => {
+                s.style.display = 'none';
+            });
+            
+            // Show the requested screen
+            screen.style.display = 'block';
+            gameState.currentScreen = screen;
+            
+            // Additional setup based on the screen
+            if (screen === mapScreen) {
+                updateMapProgress();
+            }
+        }
+
+        // Start background music
+        function startBackgroundMusic() {
+            if (gameState.settings.music && bgMusic.paused) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(e => {
+                    console.log("Audio playback prevented: User interaction required first");
+                });
+            }
+        }
+
+        // Play a sound effect
+        function playSound(sound) {
+            if (gameState.settings.sfx) {
+                sound.currentTime = 0;
+                sound.volume = 0.5;
+                sound.play().catch(e => {
+                    console.log("Audio playback prevented: User interaction required first");
+                });
+            }
+        }
+
+        // Show inventory screen
+        function showInventory() {
+            updateInventoryUI();
+            inventoryScreen.style.display = 'flex';
+        }
+
+        // Hide inventory screen
+        function hideInventory() {
+            inventoryScreen.style.display = 'none';
+        }
+
+        // Show settings screen
+        function showSettings() {
+            updateProgressUI();
+            settingsScreen.style.display = 'flex';
+        }
+
+        // Hide settings screen
+        function hideSettings() {
+            settingsScreen.style.display = 'none';
+        }
+
+        // Show how to play screen
+        function showHowToPlay() {
+            howToPlayScreen.style.display = 'flex';
+        }
+
+        // Hide how to play screen
+        function hideHowToPlay() {
+            howToPlayScreen.style.display = 'none';
+        }
+
+        // Update inventory UI
+        function updateInventoryUI() {
+            document.getElementById('inventoryCoinCounter').textContent = gameState.coins;
+            document.getElementById('hintScrollCount').textContent = `${gameState.inventory.hintScrolls}/3`;
+            document.getElementById('extraLifeCount').textContent = `${gameState.inventory.extraLives}/3`;
+            
+            document.getElementById('blueCrystalCount').textContent = gameState.inventory.blueCrystal ? '1/1' : '0/1';
+            document.getElementById('greenCrystalCount').textContent = gameState.inventory.greenCrystal ? '1/1' : '0/1';
+            document.getElementById('purpleCrystalCount').textContent = gameState.inventory.purpleCrystal ? '1/1' : '0/1';
+            document.getElementById('redCrystalCount').textContent = gameState.inventory.redCrystal ? '1/1' : '0/1';
+        }
+
+        // Update coin counter
+        function updateCoinCounter() {
+            document.getElementById('coinCounter').textContent = gameState.coins;
+        }
+
+        // Update progress UI in settings
+        function updateProgressUI() {
+            const crystalElements = [
+                document.getElementById('progressCrystal1'),
+                document.getElementById('progressCrystal2'),
+                document.getElementById('progressCrystal3'),
+                document.getElementById('progressCrystal4')
+            ];
+            
+            if (gameState.inventory.blueCrystal) {
+                crystalElements[0].style.backgroundColor = '#3B82F6';
+                crystalElements[0].querySelector('i').classList.add('text-white');
+            }
+            
+            if (gameState.inventory.greenCrystal) {
+                crystalElements[1].style.backgroundColor = '#10B981';
+                crystalElements[1].querySelector('i').classList.add('text-white');
+            }
+            
+            if (gameState.inventory.purpleCrystal) {
+                crystalElements[2].style.backgroundColor = '#8B5CF6';
+                crystalElements[2].querySelector('i').classList.add('text-white');
+            }
+            
+            if (gameState.inventory.redCrystal) {
+                crystalElements[3].style.backgroundColor = '#EF4444';
+                crystalElements[3].querySelector('i').classList.add('text-white');
+            }
+        }
+
+        // Update map progress
+        function updateMapProgress() {
+            const mapMarkers = document.querySelectorAll('.map-marker');
+            
+            // Reset all first
+            mapMarkers.forEach(marker => {
+                marker.classList.remove('shine-effect');
+            });
+            
+            // Add effects to completed games
+            if (gameState.progress.matchingCompleted) {
+                mapMarkers[0].classList.add('shine-effect');
+            }
+            
+            if (gameState.progress.builderCompleted) {
+                mapMarkers[1].classList.add('shine-effect');
+            }
+            
+            if (gameState.progress.puzzlesCompleted) {
+                mapMarkers[2].classList.add('shine-effect');
+            }
+            
+            if (gameState.progress.racingCompleted) {
+                mapMarkers[3].classList.add('shine-effect');
+            }
+        }
+
+        // Buy an item
+        function buyItem(item, cost) {
+            if (gameState.coins >= cost) {
+                if (item === 'hintScroll' && gameState.inventory.hintScrolls < 3) {
+                    gameState.coins -= cost;
+                    gameState.inventory.hintScrolls++;
+                    playSound(coinSound);
+                    showFloatingText(buyHintScroll, "Hint Scroll acquired!");
+                } else if (item === 'extraLife' && gameState.inventory.extraLives < 3) {
+                    gameState.coins -= cost;
+                    gameState.inventory.extraLives++;
+                    playSound(coinSound);
+                    showFloatingText(buyExtraLife, "Extra Life acquired!");
+                } else {
+                    playSound(wrongSound);
+                    showFloatingText(
+                        item === 'hintScroll' ? buyHintScroll : buyExtraLife, 
+                        "Max inventory reached!"
+                    );
+                }
+                
+                updateInventoryUI();
+                updateCoinCounter();
+                saveGameState();
+            } else {
+                playSound(wrongSound);
+                showFloatingText(
+                    item === 'hintScroll' ? buyHintScroll : buyExtraLife, 
+                    "Not enough coins!"
+                );
+            }
+        }
+
+        // Use a hint
+        function useHint() {
+            if (gameState.inventory.hintScrolls > 0) {
+                gameState.inventory.hintScrolls--;
+                updateInventoryUI();
+                saveGameState();
+                
+                playSound(clickSound);
+                
+                // Provide hint based on current game
+                switch (gameState.currentGame) {
+                    case 'matching':
+                        provideMatchingHint();
+                        break;
+                    case 'builder':
+                        provideBuilderHint();
+                        break;
+                    case 'puzzles':
+                        providePuzzlesHint();
+                        break;
+                    case 'racing':
+                        provideRacingHint();
+                        break;
+                }
+                
+                // Update hint count display in current game
+                const hintCountDisplay = document.querySelector(`#${gameState.currentGame}Game .hint-count`);
+                if (hintCountDisplay) {
+                    hintCountDisplay.textContent = gameState.inventory.hintScrolls;
+                }
+            } else {
+                playSound(wrongSound);
+                showFloatingText(
+                    document.querySelector(`#${gameState.currentGame}Game .hint-button`),
+                    "No hint scrolls left!"
+                );
+            }
+        }
+
+        // Show floating text message
+        function showFloatingText(element, text) {
+            const floatingText = document.createElement('div');
+            floatingText.className = 'absolute bg-white px-2 py-1 rounded-lg shadow-md text-sm';
+            floatingText.style.top = '-30px';
+            floatingText.style.left = '50%';
+            floatingText.style.transform = 'translateX(-50%)';
+            floatingText.style.whiteSpace = 'nowrap';
+            floatingText.style.zIndex = '100';
+            floatingText.textContent = text;
+            
+            const elementRect = element.getBoundingClientRect();
+            const parentElement = element.parentElement;
+            
+            parentElement.style.position = 'relative';
+            parentElement.appendChild(floatingText);
+            
+            setTimeout(() => {
+                floatingText.style.opacity = '0';
+                floatingText.style.transform = 'translateX(-50%) translateY(-20px)';
+                floatingText.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    floatingText.remove();
+                }, 500);
+            }, 1500);
+        }
+
+        // Start a specific game
+        function startGame(gameType) {
+            gameState.currentGame = gameType;
+            
+            // Update hint count display
+            const hintCountDisplay = document.querySelector(`#${gameType}Game .hint-count`);
+            if (hintCountDisplay) {
+                hintCountDisplay.textContent = gameState.inventory.hintScrolls;
+            }
+            
+            switch (gameType) {
+                case 'matching':
+                    initMatchingGame();
+                    showScreen(matchingGame);
+                    break;
+                case 'builder':
+                    initBuilderGame();
+                    showScreen(builderGame);
+                    break;
+                case 'puzzles':
+                    initPuzzlesGame();
+                    showScreen(puzzlesGame);
+                    break;
+                case 'racing':
+                    initRacingGame();
+                    showScreen(racingGame);
+                    break;
+            }
+        }
+
+        // Return to map
+        function returnToMap() {
+            // Stop any game timers
+            stopGameTimers();
+            
+            showScreen(mapScreen);
+        }
+
+        // Stop all game timers
+        function stopGameTimers() {
+            // Clear any active timers
+            if (window.matchingTimer) clearInterval(window.matchingTimer);
+            if (window.builderTimer) clearInterval(window.builderTimer);
+            if (window.puzzlesTimer) clearInterval(window.puzzlesTimer);
+            if (window.racingTimer) clearInterval(window.racingTimer);
+        }
+
+        // Show game result dialog
+        function showResultDialog(success, score, stars) {
+            const resultTitle = document.getElementById('resultTitle');
+            const resultIcon = document.getElementById('resultIcon');
+            const resultMessage = document.getElementById('resultMessage');
+            const rewardCoins = document.getElementById('rewardCoins');
+            const rewardStars = document.getElementById('rewardStars');
+            
+            if (success) {
+                resultTitle.textContent = "Great Job!";
+                resultTitle.className = "game-title text-3xl text-center mb-4 text-indigo-600";
+                resultIcon.className = "w-20 h-20 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl mb-4 animate-bounce";
+                resultIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                resultMessage.textContent = `You've completed the ${gameState.currentGame} challenge!`;
+                playSound(winSound);
+            } else {
+                resultTitle.textContent = "Try Again";
+                resultTitle.className = "game-title text-3xl text-center mb-4 text-red-600";
+                resultIcon.className = "w-20 h-20 rounded-full bg-red-500 flex items-center justify-center text-white text-3xl mb-4 animate-bounce";
+                resultIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                resultMessage.textContent = "Don't worry, practice makes perfect!";
+                playSound(wrongSound);
+            }
+            
+            rewardCoins.textContent = `+${score}`;
+            
+            let starsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < stars) {
+                    starsHtml += '★';
+                } else {
+                    starsHtml += '☆';
+                }
+            }
+            rewardStars.textContent = starsHtml;
+            
+            // Add coins to player
+            gameState.coins += score;
+            gameState.progress.totalScore += score;
+            
+            // Update counters
+            updateCoinCounter();
+            saveGameState();
+            
+            // Show confetti for success
+            if (success) {
+                createConfetti();
+            }
+            
+            // Show the dialog
+            resultDialog.style.display = 'flex';
+        }
+
+        // Hide result dialog
+        function hideResultDialog() {
+            resultDialog.style.display = 'none';
+        }
+
+        // Show crystal found dialog
+        function showCrystalDialog(type) {
+            const crystalIcon = document.getElementById('crystalIcon');
+            const crystalMessage = document.getElementById('crystalMessage');
+            
+            let color, message;
+            
+            switch (type) {
+                case 'blue':
+                    color = 'blue';
+                    message = "Blue Fraction Crystal";
+                    gameState.inventory.blueCrystal = true;
+                    break;
+                case 'green':
+                    color = 'green';
+                    message = "Green Fraction Crystal";
+                    gameState.inventory.greenCrystal = true;
+                    break;
+                case 'purple':
+                    color = 'purple';
+                    message = "Purple Fraction Crystal";
+                    gameState.inventory.purpleCrystal = true;
+                    break;
+                case 'red':
+                    color = 'red';
+                    message = "Red Fraction Crystal";
+                    gameState.inventory.redCrystal = true;
+                    break;
+            }
+            
+            crystalIcon.className = `w-24 h-24 rounded-full bg-${color}-500 flex items-center justify-center text-white text-4xl mb-4 animate-float shine-effect`;
+            crystalMessage.textContent = `You've found the ${message}!`;
+            
+            // Play sound
+            playSound(winSound);
+            
+            // Show dialog
+            crystalDialog.style.display = 'flex';
+            
+            // Update inventory and save
+            updateInventoryUI();
+            saveGameState();
+            
+            // Massive confetti celebration
+            createConfetti(100);
+            setTimeout(() => createConfetti(100), 300);
+        }
+
+        // Hide crystal dialog
+        function hideCrystalDialog() {
+            crystalDialog.style.display = 'none';
+        }
+
+        // Show completion dialog
+        function showCompletionDialog() {
+            // Calculate time played
+            const totalTime = Math.floor((Date.now() - gameState.progress.startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            
+            document.getElementById('finalScore').textContent = gameState.progress.totalScore;
+            document.getElementById('puzzlesSolved').textContent = gameState.progress.puzzlesSolved;
+            document.getElementById('timePlayed').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            completionDialog.style.display = 'flex';
+            
+            // Epic confetti
+            createConfetti(200);
+            setTimeout(() => createConfetti(200), 800);
+            setTimeout(() => createConfetti(200), 1600);
+            
+            // Play victory sound
+            playSound(winSound);
+        }
+
+        // Hide completion dialog
+        function hideCompletionDialog() {
+            completionDialog.style.display = 'none';
+        }
+
+        // Check if crystal should be awarded
+        function checkCrystalReward() {
+            if (gameState.currentGame === 'matching' && !gameState.inventory.greenCrystal && gameState.progress.matchingCompleted) {
+                showCrystalDialog('green');
+            } else if (gameState.currentGame === 'builder' && !gameState.inventory.blueCrystal && gameState.progress.builderCompleted) {
+                showCrystalDialog('blue');
+            } else if (gameState.currentGame === 'puzzles' && !gameState.inventory.purpleCrystal && gameState.progress.puzzlesCompleted) {
+                showCrystalDialog('purple');
+            } else if (gameState.currentGame === 'racing' && !gameState.inventory.redCrystal && gameState.progress.racingCompleted) {
+                showCrystalDialog('red');
+            }
+        }
+
+        // Check if game is completed
+        function checkGameCompletion() {
+            if (
+                gameState.inventory.blueCrystal && 
+                gameState.inventory.greenCrystal && 
+                gameState.inventory.purpleCrystal && 
+                gameState.inventory.redCrystal
+            ) {
+                showCompletionDialog();
+            }
+        }
+
+        // Create confetti effect
+        function createConfetti(count = 50) {
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random color
+                const hue = Math.random() * 360;
+                confetti.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+                
+                // Random position
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = '-20px';
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Random shape (circle or square)
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                // Random rotation
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // Random animation duration
+                const duration = Math.random() * 3 + 2;
+                confetti.style.animationDuration = `${duration}s`;
+                
+                document.body.appendChild(confetti);
+                
+                // Remove confetti after animation completes
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration * 1000);
+            }
+        }
+
+        // Show message
+        function showMessage(title, message) {
+            alert(`${title}: ${message}`);
+        }
+
+        // Flying coin animation
+        function createFlyingCoin(startElement, endElement, count = 1) {
+            const startRect = startElement.getBoundingClientRect();
+            const endRect = endElement.getBoundingClientRect();
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'flying-coin';
+                    coin.innerHTML = '<i class="fas fa-coins"></i>';
+                    
+                    // Position at start element
+                    coin.style.left = `${startRect.left + startRect.width / 2}px`;
+                    coin.style.top = `${startRect.top + startRect.height / 2}px`;
+                    
+                    document.body.appendChild(coin);
+                    
+                    // Animation to end element
+                    setTimeout(() => {
+                        // Random arc path
+                        const cpX = (startRect.left + endRect.left) / 2 + (Math.random() * 100 - 50);
+                        const cpY = (startRect.top + endRect.top) / 2 - 100;
+                        
+                        coin.style.transition = 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.2)';
+                        
+                        coin.animate([
+                            { transform: 'scale(0.8)', opacity: 1 },
+                            { 
+                                transform: 'scale(1.2)', 
+                                left: `${cpX}px`,
+                                top: `${cpY}px`, 
+                                offset: 0.5 
+                            },
+                            { 
+                                transform: 'scale(0.5)', 
+                                left: `${endRect.left + endRect.width / 2}px`,
+                                top: `${endRect.top + endRect.height / 2}px`,
+                                opacity: 0
+                            }
+                        ], {
+                            duration: 800,
+                            easing: 'ease-in-out',
+                            fill: 'forwards'
+                        });
+                        
+                        // Play coin sound
+                        setTimeout(() => {
+                            playSound(coinSound);
+                        }, 400);
+                        
+                        // Remove coin element after animation
+                        setTimeout(() => {
+                            coin.remove();
+                        }, 800);
+                    }, 10);
+                }, i * 150);
+            }
+        }
+
+        // ----------- MATCHING GAME FUNCTIONS -----------
+        let matchingCards = [];
+        let matchingPairs = [];
+        let flippedCards = [];
+        let canFlip = true;
+        let matchingTimeLeft = 60;
+        let matchingLivesLeft = 3;
+        let matchingPairsFound = 0;
+
+        function initMatchingGame() {
+            // Reset game state
+            matchingCards = [];
+            matchingPairs = [];
+            flippedCards = [];
+            canFlip = true;
+            matchingTimeLeft = 60;
+            matchingLivesLeft = 3;
+            matchingPairsFound = 0;
+            
+            // Update UI
+            document.getElementById('matchingTimer').textContent = matchingTimeLeft;
+            document.getElementById('matchingLives').textContent = matchingLivesLeft;
+            document.getElementById('matchingPairsFound').textContent = '0/6';
+            
+            // Generate fraction pairs
+            generateMatchingPairs();
+            
+            // Render cards
+            renderMatchingCards();
+            
+            // Start timer
+            if (window.matchingTimer) clearInterval(window.matchingTimer);
+            window.matchingTimer = setInterval(updateMatchingTimer, 1000);
+        }
+
+        function generateMatchingPairs() {
+            // Create pairs of equivalent fractions
+            matchingPairs = [
+                { id: 1, value: 0.5, representations: ['1/2', '2/4'] },
+                { id: 2, value: 0.25, representations: ['1/4', '2/8'] },
+                { id: 3, value: 0.75, representations: ['3/4', '6/8'] },
+                { id: 4, value: 0.333, representations: ['1/3', '2/6'] },
+                { id: 5, value: 0.667, representations: ['2/3', '4/6'] },
+                { id: 6, value: 0.2, representations: ['1/5', '2/10'] }
+            ];
+            
+            // Create cards from pairs
+            matchingCards = [];
+            for (const pair of matchingPairs) {
+                for (const representation of pair.representations) {
+                    matchingCards.push({
+                        id: matchingCards.length,
+                        pairId: pair.id,
+                        text: representation,
+                        value: pair.value,
+                        flipped: false,
+                        matched: false
+                    });
+                }
+            }
+            
+            // Shuffle cards
+            matchingCards = shuffleArray(matchingCards);
+        }
+
+        function renderMatchingCards() {
+            const grid = document.getElementById('matchingGrid');
+            grid.innerHTML = '';
+            
+            for (const card of matchingCards) {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'match-card';
+                cardElement.dataset.id = card.id;
+                cardElement.dataset.pairId = card.pairId;
+                cardElement.dataset.value = card.value;
+                
+                if (card.flipped) cardElement.classList.add('flipped');
+                if (card.matched) cardElement.classList.add('matched');
+                
+                cardElement.innerHTML = `
+                    <div class="match-card-inner">
+                        <div class="match-card-front">
+                            <i class="fas fa-question text-white text-4xl"></i>
+                        </div>
+                        <div class="match-card-back">
+                            <span class="text-2xl font-bold">${card.text}</span>
+                        </div>
+                    </div>
+                `;
+                
+                cardElement.addEventListener('click', () => flipCard(card.id));
+                grid.appendChild(cardElement);
+            }
+        }
+
+        function flipCard(cardId) {
+            // Only allow flipping if game is active
+            if (!canFlip) return;
+            
+            const card = matchingCards.find(c => c.id === cardId);
+            
+            // Check if card is already flipped or matched
+            if (card.flipped || card.matched) return;
+            
+            // Play sound
+            playSound(clickSound);
+            
+            // Flip the card
+            card.flipped = true;
+            flippedCards.push(card);
+            
+            // Update UI
+            renderMatchingCards();
+            
+            // Check for match if we have 2 flipped cards
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                
+                setTimeout(() => {
+                    checkForMatch();
+                    canFlip = true;
+                }, 1000);
+            }
+        }
+
+        function checkForMatch() {
+            if (flippedCards.length !== 2) return;
+            
+            const [card1, card2] = flippedCards;
+            
+            if (card1.pairId === card2.pairId) {
+                // Match found
+                card1.matched = true;
+                card2.matched = true;
+                matchingPairsFound++;
+                
+                // Play sound
+                playSound(correctSound);
+                
+                // Update UI
+                document.getElementById('matchingPairsFound').textContent = `${matchingPairsFound}/6`;
+                
+                // Check for game completion
+                if (matchingPairsFound === 6) {
+                    clearInterval(window.matchingTimer);
+                    
+                    // Award more points for faster completion
+                    const timeBonus = Math.max(0, matchingTimeLeft);
+                    const score = 50 + timeBonus;
+                    const stars = timeBonus > 30 ? 3 : (timeBonus > 15 ? 2 : 1);
+                    
+                    // Mark as completed
+                    gameState.progress.matchingCompleted = true;
+                    gameState.progress.puzzlesSolved += 6;
+                    saveGameState();
+                    
+                    // Show result
+                    setTimeout(() => {
+                        showResultDialog(true, score, stars);
+                    }, 1000);
+                }
+            } else {
+                // No match
+                card1.flipped = false;
+                card2.flipped = false;
+                
+                // Play sound
+                playSound(wrongSound);
+                
+                // Lose a life
+                matchingLivesLeft--;
+                document.getElementById('matchingLives').textContent = matchingLivesLeft;
+                
+                // Check for game over
+                if (matchingLivesLeft <= 0) {
+                    clearInterval(window.matchingTimer);
+                    
+                    // Game over
+                    setTimeout(() => {
+                        showResultDialog(false, 10, 0);
+                    }, 1000);
+                }
+            }
+            
+            // Clear flipped cards array
+            flippedCards = [];
+            
+            // Update UI
+            renderMatchingCards();
+        }
+
+        function updateMatchingTimer() {
+            if (matchingTimeLeft > 0) {
+                matchingTimeLeft--;
+                document.getElementById('matchingTimer').textContent = matchingTimeLeft;
+                
+                // Flash timer when low
+                if (matchingTimeLeft <= 10) {
+                    document.getElementById('matchingTimer').classList.add('text-red-500');
+                    
+                    if (matchingTimeLeft % 2 === 0) {
+                        document.getElementById('matchingTimer').classList.add('animate-pulse');
+                    } else {
+                        document.getElementById('matchingTimer').classList.remove('animate-pulse');
+                    }
+                }
+            } else {
+                // Time's up
+                clearInterval(window.matchingTimer);
+                
+                // Game over
+                showResultDialog(false, 5, 0);
+            }
+        }
+
+        function provideMatchingHint() {
+            // Find an unmatched card
+            const unmatchedCards = matchingCards.filter(card => !card.matched);
+            if (unmatchedCards.length > 0) {
+                // Choose a random unmatched card
+                const randomCard = unmatchedCards[Math.floor(Math.random() * unmatchedCards.length)];
+                
+                // Find its pair
+                const pairCard = unmatchedCards.find(card => 
+                    card.pairId === randomCard.pairId && card.id !== randomCard.id
+                );
+                
+                if (pairCard) {
+                    // Flash both cards briefly
+                    const cardElements = document.querySelectorAll('.match-card');
+                    
+                    cardElements.forEach(el => {
+                        if (el.dataset.id == randomCard.id || el.dataset.id == pairCard.id) {
+                            el.classList.add('bg-yellow-300');
+                            setTimeout(() => {
+                                el.classList.remove('bg-yellow-300');
+                            }, 1000);
+                        }
+                    });
+                    
+                    // Show hint text
+                    showFloatingText(
+                        document.querySelector('#matchingGame .hint-button'),
+                        `Look for: ${randomCard.text} = ${pairCard.text}`
+                    );
+                }
+            }
+        }
+
+        // ----------- BUILDER GAME FUNCTIONS -----------
+        let builderTarget = 0;
+        let builderTimeLeft = 60;
+        let builderLivesLeft = 3;
+        let builderScoreCount = 0;
+        let builderNumbers = [];
+        let builderSelectedNumerator = null;
+        let builderSelectedDenominator = null;
+
+        function initBuilderGame() {
+            // Reset game state
+            builderTimeLeft = 60;
+            builderLivesLeft = 3;
+            builderScoreCount = 0;
+            builderNumbers = [1, 2, 3, 4, 5, 6, 8, 10, 12];
+            builderSelectedNumerator = null;
+            builderSelectedDenominator = null;
+            
+            // Update UI
+            document.getElementById('builderTimer').textContent = builderTimeLeft;
+            document.getElementById('builderLives').textContent = builderLivesLeft;
+            document.getElementById('builderScore').textContent = `0/10`;
+            
+            // Clear fraction slots
+            document.getElementById('numeratorSlot').innerHTML = '';
+            document.getElementById('denominatorSlot').innerHTML = '';
+            document.getElementById('fractionValue').textContent = '?';
+            
+            // Generate new target
+            generateBuilderTarget();
+            
+            // Render number options
+            renderBuilderNumbers();
+            
+            // Setup drag and drop
+            setupBuilderDragDrop();
+            
+            // Start timer
+            if (window.builderTimer) clearInterval(window.builderTimer);
+            window.builderTimer = setInterval(updateBuilderTimer, 1000);
+        }
+
+        function generateBuilderTarget() {
+            // Generate a target fraction between 0 and 1
+            const targets = [0.5, 0.25, 0.75, 0.333, 0.667, 0.2, 0.4, 0.6, 0.8, 0.125];
+            builderTarget = targets[Math.floor(Math.random() * targets.length)];
+            
+            document.getElementById('builderTarget').textContent = builderTarget;
+            
+            // Update the visualization
+            updateBuilderVisualization(builderTarget);
+        }
+
+        function updateBuilderVisualization(value) {
+            const visualization = document.getElementById('builderVisualization');
+            visualization.innerHTML = '';
+            
+            // Create a circle representation of the fraction
+            if (value > 0) {
+                const filledSlice = document.createElement('div');
+                filledSlice.className = 'absolute inset-0';
+                filledSlice.style.backgroundColor = '#4F46E5';
+                filledSlice.style.clipPath = `polygon(50% 50%, 50% 0, ${50 + 50 * Math.cos(2 * Math.PI * value)}% ${50 - 50 * Math.sin(2 * Math.PI * value)}%, 50% 50%)`;
+                
+                if (value >= 0.5) {
+                    filledSlice.style.clipPath = `polygon(50% 50%, 50% 0, 100% 0, 100% ${value <= 0.75 ? 50 : 100}%, ${value >= 0.75 ? 0 : 50}% 100%, 50% 50%)`;
+                }
+                
+                if (value >= 0.75) {
+                    filledSlice.style.clipPath = `polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 0 100%, 0 ${50 * (1 - (value - 0.75) * 4)}%, 50% 50%)`;
+                }
+                
+                if (value === 1) {
+                    filledSlice.style.clipPath = 'none';
+                }
+                
+                visualization.appendChild(filledSlice);
+            }
+        }
+
+        function renderBuilderNumbers() {
+            const optionsContainer = document.getElementById('numberOptions');
+            optionsContainer.innerHTML = '';
+            
+            // Shuffle the numbers
+            const shuffledNumbers = shuffleArray([...builderNumbers]);
+            
+            // Create number elements
+            for (const num of shuffledNumbers) {
+                const numberElement = document.createElement('div');
+                numberElement.className = 'fraction-part bg-white rounded-lg p-3 text-center shadow-md';
+                numberElement.textContent = num;
+                numberElement.dataset.value = num;
+                numberElement.draggable = true;
+                
+                optionsContainer.appendChild(numberElement);
+            }
+        }
+
+        function setupBuilderDragDrop() {
+            // Get all draggable elements
+            const draggables = document.querySelectorAll('.fraction-part');
+            const dropZones = document.querySelectorAll('.fraction-slot');
+            
+            // Setup drag for number elements
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', e => {
+                    gameState.draggedElement = draggable;
+                    draggable.classList.add('opacity-50');
+                });
+                
+                draggable.addEventListener('dragend', e => {
+                    gameState.draggedElement = null;
+                    draggable.classList.remove('opacity-50');
+                });
+                
+                // Also handle click for mobile
+                draggable.addEventListener('click', e => {
+                    const value = parseInt(draggable.dataset.value);
+                    
+                    // If we already have both numerator and denominator selected, do nothing
+                    if (builderSelectedNumerator !== null && builderSelectedDenominator !== null) {
+                        return;
+                    }
+                    
+                    playSound(clickSound);
+                    
+                    // Place in first empty slot
+                    if (builderSelectedNumerator === null) {
+                        builderSelectedNumerator = value;
+                        document.getElementById('numeratorSlot').textContent = value;
+                    } else if (builderSelectedDenominator === null) {
+                        builderSelectedDenominator = value;
+                        document.getElementById('denominatorSlot').textContent = value;
+                    }
+                    
+                    // Update fraction value display
+                    updateFractionValue();
+                });
+            });
+            
+            // Setup drop zones
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('highlight');
+                });
+                
+                zone.addEventListener('dragleave', e => {
+                    zone.classList.remove('highlight');
+                });
+                
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('highlight');
+                    
+                    if (gameState.draggedElement) {
+                        const value = parseInt(gameState.draggedElement.dataset.value);
+                        const type = zone.dataset.type;
+                        
+                        playSound(clickSound);
+                        
+                        if (type === 'numerator') {
+                            builderSelectedNumerator = value;
+                            zone.textContent = value;
+                        } else if (type === 'denominator') {
+                            builderSelectedDenominator = value;
+                            zone.textContent = value;
+                        }
+                        
+                        // Update fraction value display
+                        updateFractionValue();
+                    }
+                });
+            });
+        }
+
+        function updateFractionValue() {
+            if (builderSelectedNumerator !== null && builderSelectedDenominator !== null) {
+                if (builderSelectedDenominator === 0) {
+                    document.getElementById('fractionValue').textContent = 'Undefined';
+                } else {
+                    const value = builderSelectedNumerator / builderSelectedDenominator;
+                    document.getElementById('fractionValue').textContent = value.toFixed(3);
+                }
+            }
+        }
+
+        function checkBuilderFraction() {
+            if (builderSelectedNumerator === null || builderSelectedDenominator === null) {
+                showFloatingText(
+                    document.getElementById('checkFractionButton'),
+                    "Please build a complete fraction!"
+                );
+                return;
+            }
+            
+            if (builderSelectedDenominator === 0) {
+                showFloatingText(
+                    document.getElementById('checkFractionButton'),
+                    "Denominator cannot be zero!"
+                );
+                return;
+            }
+            
+            const value = builderSelectedNumerator / builderSelectedDenominator;
+            const targetValue = builderTarget;
+            
+            // Allow for small rounding errors
+            const isCorrect = Math.abs(value - targetValue) < 0.001;
+            
+            if (isCorrect) {
+                // Correct answer
+                playSound(correctSound);
+                
+                // Animate correct answer
+                const numeratorSlot = document.getElementById('numeratorSlot');
+                const denominatorSlot = document.getElementById('denominatorSlot');
+                
+                numeratorSlot.classList.add('correct');
+                denominatorSlot.classList.add('correct');
+                
+                setTimeout(() => {
+                    numeratorSlot.classList.remove('correct');
+                    denominatorSlot.classList.remove('correct');
+                    
+                    // Increment score
+                    builderScoreCount++;
+                    document.getElementById('builderScore').textContent = `${builderScoreCount}/10`;
+                    
+                    // Check for completion
+                    if (builderScoreCount >= 10) {
+                        // Game completed
+                        clearInterval(window.builderTimer);
+                        
+                        // Award score based on time and lives left
+                        const timeBonus = Math.max(0, builderTimeLeft);
+                        const livesBonus = builderLivesLeft * 5;
+                        const score = 50 + timeBonus + livesBonus;
+                        const stars = timeBonus > 30 ? 3 : (timeBonus > 15 ? 2 : 1);
+                        
+                        // Mark as completed
+                        gameState.progress.builderCompleted = true;
+                        gameState.progress.puzzlesSolved += 10;
+                        saveGameState();
+                        
+                        // Show result
+                        setTimeout(() => {
+                            showResultDialog(true, score, stars);
+                        }, 1000);
+                    } else {
+                        // Generate new target
+                        generateBuilderTarget();
+                        
+                        // Clear fraction slots
+                        numeratorSlot.innerHTML = '';
+                        denominatorSlot.innerHTML = '';
+                        document.getElementById('fractionValue').textContent = '?';
+                        
+                        // Reset selection
+                        builderSelectedNumerator = null;
+                        builderSelectedDenominator = null;
+                    }
+                }, 1000);
+            } else {
+                // Wrong answer
+                playSound(wrongSound);
+                
+                // Animate incorrect answer
+                const numeratorSlot = document.getElementById('numeratorSlot');
+                const denominatorSlot = document.getElementById('denominatorSlot');
+                
+                numeratorSlot.classList.add('incorrect');
+                denominatorSlot.classList.add('incorrect');
+                numeratorSlot.classList.add('wiggle');
+                denominatorSlot.classList.add('wiggle');
+                
+                setTimeout(() => {
+                    numeratorSlot.classList.remove('incorrect', 'wiggle');
+                    denominatorSlot.classList.remove('incorrect', 'wiggle');
+                    
+                    // Lose a life
+                    builderLivesLeft--;
+                    document.getElementById('builderLives').textContent = builderLivesLeft;
+                    
+                    // Check for game over
+                    if (builderLivesLeft <= 0) {
+                        clearInterval(window.builderTimer);
+                        
+                        // Game over
+                        setTimeout(() => {
+                            showResultDialog(false, 10, 0);
+                        }, 1000);
+                    }
+                }, 1000);
+            }
+        }
+
+        function updateBuilderTimer() {
+            if (builderTimeLeft > 0) {
+                builderTimeLeft--;
+                document.getElementById('builderTimer').textContent = builderTimeLeft;
+                
+                // Flash timer when low
+                if (builderTimeLeft <= 10) {
+                    document.getElementById('builderTimer').classList.add('text-red-500');
+                    
+                    if (builderTimeLeft % 2 === 0) {
+                        document.getElementById('builderTimer').classList.add('animate-pulse');
+                    } else {
+                        document.getElementById('builderTimer').classList.remove('animate-pulse');
+                    }
+                }
+            } else {
+                // Time's up
+                clearInterval(window.builderTimer);
+                
+                // Game over
+                showResultDialog(false, 5, 0);
+            }
+        }
+
+        function provideBuilderHint() {
+            // Calculate the fraction that would match the target
+            const possibilities = [];
+            
+            for (let numerator of builderNumbers) {
+                for (let denominator of builderNumbers) {
+                    if (denominator === 0) continue;
+                    
+                    const value = numerator / denominator;
+                    if (Math.abs(value - builderTarget) < 0.001) {
+                        possibilities.push({ numerator, denominator });
+                    }
+                }
+            }
+            
+            if (possibilities.length > 0) {
+                // Choose a random possibility
+                const hint = possibilities[Math.floor(Math.random() * possibilities.length)];
+                
+                // Show hint text
+                showFloatingText(
+                    document.querySelector('#builderGame .hint-button'),
+                    `Try ${hint.numerator}/${hint.denominator} = ${builderTarget}`
+                );
+            }
+        }
+
+        // ----------- PUZZLES GAME FUNCTIONS -----------
+        let puzzlesTimeLeft = 30;
+        let puzzlesLivesLeft = 3;
+        let puzzlesScoreCount = 0;
+        let currentPuzzle = null;
+        let puzzlePieces = [];
+        let selectedPieces = [];
+
+        function initPuzzlesGame() {
+            // Reset game state
+            puzzlesTimeLeft = 30;
+            puzzlesLivesLeft = 3;
+            puzzlesScoreCount = 0;
+            puzzlePieces = [];
+            selectedPieces = [];
+            
+            // Update UI
+            document.getElementById('puzzlesTimerBar').style.width = '100%';
+            document.getElementById('puzzlesLives').textContent = puzzlesLivesLeft;
+            document.getElementById('puzzlesScore').textContent = `0/8`;
+            
+            // Generate new puzzle
+            generatePuzzle();
+            
+            // Start timer
+            if (window.puzzlesTimer) clearInterval(window.puzzlesTimer);
+            window.puzzlesTimer = setInterval(updatePuzzlesTimer, 1000);
+        }
+
+        function generatePuzzle() {
+            // Clear previous puzzle
+            const equationContainer = document.getElementById('puzzleEquation');
+            const piecesContainer = document.getElementById('puzzlePieces');
+            equationContainer.innerHTML = '';
+            piecesContainer.innerHTML = '';
+            
+            // Generate puzzle type (addition, subtraction, multiplication, division)
+            const puzzleTypes = ['addition', 'subtraction', 'multiplication', 'division'];
+            const type = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
+            
+            // Generate numbers based on type
+            let num1, num2, result;
+            switch (type) {
+                case 'addition':
+                    num1 = Math.floor(Math.random() * 5) + 1;
+                    num2 = Math.floor(Math.random() * 5) + 1;
+                    result = num1 + num2;
+                    break;
+                case 'subtraction':
+                    num1 = Math.floor(Math.random() * 5) + 6;
+                    num2 = Math.floor(Math.random() * 5) + 1;
+                    result = num1 - num2;
+                    break;
+                case 'multiplication':
+                    num1 = Math.floor(Math.random() * 3) + 1;
+                    num2 = Math.floor(Math.random() * 3) + 1;
+                    result = num1 * num2;
+                    break;
+                case 'division':
+                    num2 = Math.floor(Math.random() * 3) + 1;
+                    result = Math.floor(Math.random() * 3) + 1;
+                    num1 = num2 * result;
+                    break;
+            }
+            
+            // Create equation with missing pieces
+            const equation = {
+                num1: num1,
+                num2: num2,
+                result: result,
+                type: type,
+                missing: Math.floor(Math.random() * 3) // 0: num1, 1: num2, 2: result
+            };
+            
+            currentPuzzle = equation;
+            
+            // Create equation display
+            const num1Span = document.createElement('span');
+            const num2Span = document.createElement('span');
+            const resultSpan = document.createElement('span');
+            const operatorSpan = document.createElement('span');
+            const equalsSpan = document.createElement('span');
+            
+            operatorSpan.textContent = type === 'addition' ? '+' : 
+                                     type === 'subtraction' ? '-' :
+                                     type === 'multiplication' ? '×' : '÷';
+            equalsSpan.textContent = '=';
+            
+            // Set up puzzle pieces
+            puzzlePieces = [];
+            const possibleNumbers = [num1, num2, result];
+            
+            // Add correct numbers
+            for (let i = 0; i < 3; i++) {
+                if (i !== equation.missing) {
+                    puzzlePieces.push({
+                        value: possibleNumbers[i],
+                        correct: true
+                    });
+                }
+            }
+            
+            // Add some incorrect numbers
+            for (let i = 0; i < 3; i++) {
+                let wrongNum;
+                do {
+                    wrongNum = Math.floor(Math.random() * 10) + 1;
+                } while (possibleNumbers.includes(wrongNum));
+                
+                puzzlePieces.push({
+                    value: wrongNum,
+                    correct: false
+                });
+            }
+            
+            // Shuffle pieces
+            puzzlePieces = shuffleArray(puzzlePieces);
+            
+            // Create puzzle piece elements
+            puzzlePieces.forEach((piece, index) => {
+                const pieceElement = document.createElement('div');
+                pieceElement.className = 'puzzle-piece bg-white p-4 rounded-lg shadow-md text-center text-xl font-bold cursor-pointer';
+                pieceElement.textContent = piece.value;
+                pieceElement.dataset.index = index;
+                pieceElement.dataset.value = piece.value;
+                pieceElement.dataset.correct = piece.correct;
+                
+                pieceElement.addEventListener('click', () => selectPuzzlePiece(pieceElement));
+                piecesContainer.appendChild(pieceElement);
+            });
+            
+            // Display equation with missing piece
+            equationContainer.appendChild(num1Span);
+            equationContainer.appendChild(operatorSpan);
+            equationContainer.appendChild(num2Span);
+            equationContainer.appendChild(equalsSpan);
+            equationContainer.appendChild(resultSpan);
+            
+            // Set up missing piece
+            const missingSpan = equation.missing === 0 ? num1Span :
+                              equation.missing === 1 ? num2Span : resultSpan;
+            
+            missingSpan.className = 'puzzle-slot w-16 h-16 rounded-lg flex items-center justify-center text-2xl font-bold';
+            missingSpan.dataset.type = equation.missing === 0 ? 'num1' :
+                                     equation.missing === 1 ? 'num2' : 'result';
+            
+            // Fill in the known numbers
+            if (equation.missing !== 0) num1Span.textContent = num1;
+            if (equation.missing !== 1) num2Span.textContent = num2;
+            if (equation.missing !== 2) resultSpan.textContent = result;
+        }
+
+        function selectPuzzlePiece(pieceElement) {
+            if (selectedPieces.length > 0) return;
+            
+            playSound(clickSound);
+            
+            // Highlight the piece
+            pieceElement.classList.add('bg-indigo-100');
+            selectedPieces.push(pieceElement);
+            
+            // Find the empty slot
+            const emptySlot = document.querySelector('.puzzle-slot');
+            if (emptySlot) {
+                emptySlot.classList.add('highlight');
+                
+                // Check if the piece fits
+                setTimeout(() => {
+                    checkPuzzlePiece(pieceElement, emptySlot);
+                }, 1000);
+            }
+        }
+
+        function checkPuzzlePiece(pieceElement, slot) {
+            const value = parseInt(pieceElement.dataset.value);
+            const isCorrect = pieceElement.dataset.correct === 'true';
+            
+            if (isCorrect) {
+                // Correct piece
+                playSound(correctSound);
+                
+                // Place the piece
+                slot.textContent = value;
+                slot.classList.remove('highlight');
+                slot.classList.add('correct');
+                
+                // Remove the piece
+                pieceElement.remove();
+                
+                // Clear selection
+                selectedPieces = [];
+                
+                // Check for puzzle completion
+                setTimeout(() => {
+                    slot.classList.remove('correct');
+                    
+                    // Increment score
+                    puzzlesScoreCount++;
+                    document.getElementById('puzzlesScore').textContent = `${puzzlesScoreCount}/8`;
+                    
+                    // Check for game completion
+                    if (puzzlesScoreCount >= 8) {
+                        // Game completed
+                        clearInterval(window.puzzlesTimer);
+                        
+                        // Award score based on time and lives left
+                        const timeBonus = Math.max(0, puzzlesTimeLeft);
+                        const livesBonus = puzzlesLivesLeft * 5;
+                        const score = 50 + timeBonus + livesBonus;
+                        const stars = timeBonus > 20 ? 3 : (timeBonus > 10 ? 2 : 1);
+                        
+                        // Mark as completed
+                        gameState.progress.puzzlesCompleted = true;
+                        gameState.progress.puzzlesSolved += 8;
+                        saveGameState();
+                        
+                        // Show result
+                        setTimeout(() => {
+                            showResultDialog(true, score, stars);
+                        }, 1000);
+                    } else {
+                        // Generate new puzzle
+                        generatePuzzle();
+                    }
+                }, 1000);
+            } else {
+                // Wrong piece
+                playSound(wrongSound);
+                
+                // Animate incorrect
+                pieceElement.classList.add('incorrect');
+                pieceElement.classList.add('wiggle');
+                
+                // Clear selection
+                selectedPieces = [];
+                
+                setTimeout(() => {
+                    pieceElement.classList.remove('incorrect', 'wiggle', 'bg-indigo-100');
+                    slot.classList.remove('highlight');
+                    
+                    // Lose a life
+                    puzzlesLivesLeft--;
+                    document.getElementById('puzzlesLives').textContent = puzzlesLivesLeft;
+                    
+                    // Check for game over
+                    if (puzzlesLivesLeft <= 0) {
+                        clearInterval(window.puzzlesTimer);
+                        
+                        // Game over
+                        setTimeout(() => {
+                            showResultDialog(false, 10, 0);
+                        }, 1000);
+                    }
+                }, 1000);
+            }
+        }
+
+        function updatePuzzlesTimer() {
+            if (puzzlesTimeLeft > 0) {
+                puzzlesTimeLeft--;
+                const percentage = (puzzlesTimeLeft / 30) * 100;
+                document.getElementById('puzzlesTimerBar').style.width = `${percentage}%`;
+                
+                // Flash timer when low
+                if (puzzlesTimeLeft <= 10) {
+                    document.getElementById('puzzlesTimerBar').style.backgroundColor = '#EF4444';
+                    
+                    if (puzzlesTimeLeft % 2 === 0) {
+                        document.getElementById('puzzlesTimerBar').classList.add('animate-pulse');
+                    } else {
+                        document.getElementById('puzzlesTimerBar').classList.remove('animate-pulse');
+                    }
+                }
+            } else {
+                // Time's up
+                clearInterval(window.puzzlesTimer);
+                
+                // Game over
+                showResultDialog(false, 5, 0);
+            }
+        }
+
+        function providePuzzlesHint() {
+            if (currentPuzzle) {
+                const missingValue = currentPuzzle.missing === 0 ? currentPuzzle.num1 :
+                                   currentPuzzle.missing === 1 ? currentPuzzle.num2 :
+                                   currentPuzzle.result;
+                
+                // Find the correct piece
+                const correctPiece = document.querySelector(`.puzzle-piece[data-value="${missingValue}"]`);
+                
+                if (correctPiece) {
+                    // Flash the correct piece
+                    correctPiece.classList.add('bg-yellow-300');
+                    setTimeout(() => {
+                        correctPiece.classList.remove('bg-yellow-300');
+                    }, 1000);
+                    
+                    // Show hint text
+                    showFloatingText(
+                        document.querySelector('#puzzlesGame .hint-button'),
+                        `Look for the number ${missingValue}`
+                    );
+                }
+            }
+        }
+
+        // ----------- RACING GAME FUNCTIONS -----------
+        let racingProgress = 0;
+        let racingTimeLeft = 30;
+        let currentFractions = [];
+        let playerPosition = 0;
+
+        function initRacingGame() {
+            // Reset game state
+            racingProgress = 0;
+            racingTimeLeft = 30;
+            currentFractions = [];
+            playerPosition = 0;
+            
+            // Update UI
+            document.getElementById('racingTimerBar').style.width = '100%';
+            document.getElementById('racingProgress').textContent = '0/10';
+            
+            // Position player car
+            const playerCar = document.getElementById('playerCar');
+            playerCar.style.left = '10%';
+            
+            // Generate first fractions
+            generateRacingFractions();
+            
+            // Start timer
+            if (window.racingTimer) clearInterval(window.racingTimer);
+            window.racingTimer = setInterval(updateRacingTimer, 1000);
+        }
+
+        function generateRacingFractions() {
+            // Generate two fractions
+            const denominators = [2, 3, 4, 5, 6, 8, 10];
+            const d1 = denominators[Math.floor(Math.random() * denominators.length)];
+            const d2 = denominators[Math.floor(Math.random() * denominators.length)];
+            
+            const n1 = Math.floor(Math.random() * (d1 - 1)) + 1;
+            const n2 = Math.floor(Math.random() * (d2 - 1)) + 1;
+            
+            const f1 = { numerator: n1, denominator: d1, value: n1/d1 };
+            const f2 = { numerator: n2, denominator: d2, value: n2/d2 };
+            
+            currentFractions = [f1, f2];
+            
+            // Update buttons
+            document.getElementById('fraction1').textContent = `${f1.numerator}/${f1.denominator}`;
+            document.getElementById('fraction2').textContent = `${f2.numerator}/${f2.denominator}`;
+        }
+
+        function checkRacingAnswer(index) {
+            if (index < 0 || index >= currentFractions.length) return;
+            
+            const selectedFraction = currentFractions[index];
+            const otherFraction = currentFractions[1 - index];
+            
+            if (selectedFraction.value > otherFraction.value) {
+                // Correct answer
+                playSound(correctSound);
+                
+                // Move car forward
+                playerPosition += 10;
+                const playerCar = document.getElementById('playerCar');
+                playerCar.style.left = `${10 + playerPosition}%`;
+                
+                // Update progress
+                racingProgress++;
+                document.getElementById('racingProgress').textContent = `${racingProgress}/10`;
+                
+                // Check for completion
+                if (racingProgress >= 10) {
+                    // Game completed
+                    clearInterval(window.racingTimer);
+                    
+                    // Award score based on time left
+                    const timeBonus = Math.max(0, racingTimeLeft);
+                    const score = 50 + timeBonus;
+                    const stars = timeBonus > 20 ? 3 : (timeBonus > 10 ? 2 : 1);
+                    
+                    // Mark as completed
+                    gameState.progress.racingCompleted = true;
+                    gameState.progress.puzzlesSolved += 10;
+                    saveGameState();
+                    
+                    // Show result
+                    setTimeout(() => {
+                        showResultDialog(true, score, stars);
+                    }, 1000);
+                } else {
+                    // Generate new fractions
+                    generateRacingFractions();
+                }
+            } else {
+                // Wrong answer
+                playSound(wrongSound);
+                
+                // Move car backward
+                playerPosition = Math.max(0, playerPosition - 5);
+                const playerCar = document.getElementById('playerCar');
+                playerCar.style.left = `${10 + playerPosition}%`;
+                
+                // Generate new fractions
+                generateRacingFractions();
+            }
+        }
+
+        function updateRacingTimer() {
+            if (racingTimeLeft > 0) {
+                racingTimeLeft--;
+                const percentage = (racingTimeLeft / 30) * 100;
+                document.getElementById('racingTimerBar').style.width = `${percentage}%`;
+                
+                // Flash timer when low
+                if (racingTimeLeft <= 10) {
+                    document.getElementById('racingTimerBar').style.backgroundColor = '#EF4444';
+                    
+                    if (racingTimeLeft % 2 === 0) {
+                        document.getElementById('racingTimerBar').classList.add('animate-pulse');
+                    } else {
+                        document.getElementById('racingTimerBar').classList.remove('animate-pulse');
+                    }
+                }
+            } else {
+                // Time's up
+                clearInterval(window.racingTimer);
+                
+                // Game over
+                showResultDialog(false, 5, 0);
+            }
+        }
+
+        function provideRacingHint() {
+            if (currentFractions.length === 2) {
+                const largerFraction = currentFractions[0].value > currentFractions[1].value ? 0 : 1;
+                
+                // Flash the correct button
+                const correctButton = document.getElementById(`fraction${largerFraction + 1}`);
+                correctButton.classList.add('bg-yellow-300');
+                setTimeout(() => {
+                    correctButton.classList.remove('bg-yellow-300');
+                }, 1000);
+                
+                // Show hint text
+                showFloatingText(
+                    document.querySelector('#racingGame .hint-button'),
+                    `Choose the larger fraction: ${currentFractions[largerFraction].numerator}/${currentFractions[largerFraction].denominator}`
+                );
+            }
+        }
+
+        // Utility functions
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Initialize the game when the window loads
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
