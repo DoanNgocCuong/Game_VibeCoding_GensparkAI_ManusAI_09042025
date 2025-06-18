@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống chia tiền tự động</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .money-input {
+            text-align: right;
+        }
+        .balance-positive {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .balance-negative {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        @media print {
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4">
+    <div class="max-w-full mx-auto bg-white rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-calculator mr-3 text-blue-600"></i>
+                Hệ thống chia tiền tự động
+            </h1>
+            <div class="no-print">
+                <button onclick="addExpense()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-plus mr-2"></i>Thêm chi phí
+                </button>
+            </div>
+        </div>
+
+        <div class="no-print mb-6">
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                <h3 class="text-lg font-semibold text-blue-800 mb-2">Hướng dẫn sử dụng:</h3>
+                <ul class="text-blue-700 space-y-1">
+                    <li>• Nhập tên các thành viên vào hàng đầu tiên</li>
+                    <li>• Thêm chi phí và chọn người thanh toán từ dropdown</li>
+                    <li>• Hệ thống sẽ tự động tính toán và cập nhật số dư</li>
+                    <li>• Số dương (xanh): được nợ, Số âm (đỏ): đang nợ</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="expenseTable" class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-3 text-left">STT</th>
+                        <th class="border border-gray-300 p-3 text-left">Mô tả</th>
+                        <th class="border border-gray-300 p-3 text-left">Số tiền</th>
+                        <th class="border border-gray-300 p-3 text-left">Người thanh toán</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Minh Anh</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Giang</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Doc</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Tiến</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Sang</th>
+                        <th class="border border-gray-300 p-3 text-center" contenteditable="true">Cường</th>
+                        <th class="no-print border border-gray-300 p-3 text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseBody">
+                    <tr>
+                        <td class="border border-gray-300 p-3">1</td>
+                        <td class="border border-gray-300 p-3">
+                            <input type="text" class="w-full p-1 border rounded" placeholder="Mô tả chi phí" onchange="updateCalculations()">
+                        </td>
+                        <td class="border border-gray-300 p-3">
+                            <input type="number" class="w-full p-1 border rounded money-input" placeholder="0" onchange="updateCalculations()">
+                        </td>
+                        <td class="border border-gray-300 p-3">
+                            <select class="w-full p-1 border rounded" onchange="updateCalculations()">
+                                <option value="">Chọn người thanh toán</option>
+                                <option value="Minh Anh">Minh Anh</option>
+                                <option value="Giang">Giang</option>
+                                <option value="Doc">Doc</option>
+                                <option value="Tiến">Tiến</option>
+                                <option value="Sang">Sang</option>
+                                <option value="Cường">Cường</option>
+                            </select>
+                        </td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="no-print border border-gray-300 p-3 text-center">
+                            <button onclick="deleteExpense(this)" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="bg-yellow-50 font-bold">
+                        <td colspan="4" class="border border-gray-300 p-3 text-right">Tổng số dư:</td>
+                        <td id="total-0" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td id="total-1" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td id="total-2" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td id="total-3" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td id="total-4" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td id="total-5" class="border border-gray-300 p-3 text-center balance-cell">0</td>
+                        <td class="no-print border border-gray-300 p-3"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3">
+                <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                Giải thích số dư:
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center">
+                    <span class="balance-positive text-2xl mr-3">+</span>
+                    <span>Số dương (màu xanh): Số tiền mà người khác nợ bạn</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="balance-negative text-2xl mr-3">-</span>
+                    <span>Số âm (màu đỏ): Số tiền bạn nợ người khác</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const members = ['Minh Anh', 'Giang', 'Doc', 'Tiến', 'Sang', 'Cường'];
+        let expenseCount = 1;
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+        }
+
+        function updateCalculations() {
+            const rows = document.querySelectorAll('#expenseBody tr');
+            const totals = new Array(members.length).fill(0);
+
+            rows.forEach(row => {
+                const amountInput = row.querySelector('input[type="number"]');
+                const payerSelect = row.querySelector('select');
+                const balanceCells = row.querySelectorAll('.balance-cell');
+                
+                const amount = parseFloat(amountInput.value) || 0;
+                const payer = payerSelect.value;
+
+                // Reset all cells for this row
+                balanceCells.forEach(cell => {
+                    cell.textContent = '0';
+                    cell.className = 'border border-gray-300 p-3 text-center balance-cell';
+                });
+
+                if (amount > 0 && payer) {
+                    const splitAmount = amount / members.length;
+                    const payerIndex = members.indexOf(payer);
+
+                    members.forEach((member, index) => {
+                        if (index === payerIndex) {
+                            // Người trả tiền được cộng số tiền người khác nợ
+                            const receivedAmount = splitAmount * (members.length - 1);
+                            balanceCells[index].textContent = formatMoney(receivedAmount);
+                            balanceCells[index].className += ' balance-positive';
+                            totals[index] += receivedAmount;
+                        } else {
+                            // Người khác bị trừ số tiền phải trả
+                            balanceCells[index].textContent = formatMoney(-splitAmount);
+                            balanceCells[index].className += ' balance-negative';
+                            totals[index] -= splitAmount;
+                        }
+                    });
+                }
+            });
+
+            // Update totals
+            totals.forEach((total, index) => {
+                const totalCell = document.getElementById(`total-${index}`);
+                totalCell.textContent = formatMoney(total);
+                totalCell.className = 'border border-gray-300 p-3 text-center balance-cell';
+                if (total > 0) {
+                    totalCell.className += ' balance-positive';
+                } else if (total < 0) {
+                    totalCell.className += ' balance-negative';
+                }
+            });
+        }
+
+        function addExpense() {
+            expenseCount++;
+            const tbody = document.getElementById('expenseBody');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td class="border border-gray-300 p-3">${expenseCount}</td>
+                <td class="border border-gray-300 p-3">
+                    <input type="text" class="w-full p-1 border rounded" placeholder="Mô tả chi phí" onchange="updateCalculations()">
+                </td>
+                <td class="border border-gray-300 p-3">
+                    <input type="number" class="w-full p-1 border rounded money-input" placeholder="0" onchange="updateCalculations()">
+                </td>
+                <td class="border border-gray-300 p-3">
+                    <select class="w-full p-1 border rounded" onchange="updateCalculations()">
+                        <option value="">Chọn người thanh toán</option>
+                        ${members.map(member => `<option value="${member}">${member}</option>`).join('')}
+                    </select>
+                </td>
+                ${members.map(() => '<td class="border border-gray-300 p-3 text-center balance-cell">0</td>').join('')}
+                <td class="no-print border border-gray-300 p-3 text-center">
+                    <button onclick="deleteExpense(this)" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+        }
+
+        function deleteExpense(button) {
+            const row = button.closest('tr');
+            row.remove();
+            updateCalculations();
+            
+            // Re-number rows
+            const rows = document.querySelectorAll('#expenseBody tr');
+            rows.forEach((row, index) => {
+                row.firstElementChild.textContent = index + 1;
+            });
+            expenseCount = rows.length;
+        }
+
+        // Initialize with sample data
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstRow = document.querySelector('#expenseBody tr');
+            firstRow.querySelector('input[type="text"]').value = 'Hàng 1';
+            firstRow.querySelector('input[type="number"]').value = '20000000';
+            firstRow.querySelector('select').value = 'Minh Anh';
+            updateCalculations();
+        });
+    </script>
+</body>
+</html>
